@@ -1,0 +1,45 @@
+NAME		JR100;
+PARTNO		22V10;
+REVISION	A;
+DATE		24/11/30;
+DESIGNER	None;
+COMPANY		None;
+ASSEMBLY	None;
+LOCATION	None;
+DEVICE		G22V10;
+                                                    
+
+/* INPUTS... */
+Pin   1 = CLOCK;
+Pin   2 = BKILL;
+Pin   3 = A4;
+Pin   4 = A5;
+Pin   5 = A6;
+Pin   6 = A7;
+Pin   7 = A8;
+Pin   8 = A9;
+Pin   9 = A10;
+Pin  10 = A11;
+Pin  11 = A12;
+Pin  15 = A13;
+Pin  14 = A14;
+Pin  13 = A15;
+Pin  22 = RDIN;
+Pin  23 = RESIN;
+
+/* OUTPUTS... */
+Pin 16 = PIOSEL;
+Pin 17 = RAMSEL;
+Pin 18 = ROMSEL;
+Pin 19 = JOYSEL;
+Pin 20 = WEOUT;
+Pin 21 = RESOUT;
+
+/** Logic **/
+IOADD  =A15 & A14 & !(A13) & !(A12) & A11 & A10 & !(A9) & !(A8) & !(A7) & !(A6) & !(A5);
+PIOSEL = !(IOADD & A4 & !(BKILL));
+RAMSEL = !(!(A15) & A14 & !(CLOCK));
+ROMSEL = !(A15 & A14 & !(A13) & A12 & !(CLOCK)) # RDIN;
+JOYSEL = !(IOADD & !(A4) & !(CLOCK)) # RDIN;
+WEOUT = !(RDIN & !(CLOCK));
+RESOUT = !(RESIN);
