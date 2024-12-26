@@ -59,31 +59,18 @@ RAMを拡張する場合
 
 　　　注1)秋月電子通商　AE-microSD-LLCNVのJ1ジャンパはショートしてください。
 
-　　　注2)Arduino Pro MiniはA4、A5ピンも使っています。
+###　　　注2)Arduino Pro MiniはA4、A5ピンも使っています。
 
-　　　注3)J2又はJ4のどちらかを選択して取り付けてください。
+　　　注3)J6又はJ7のどちらかを選択して取り付けてください。
 
-### MicroSD Card Adapterを使う(Rev1.2以上)
-J4に取り付けます。
+### MicroSD Card Adapterを使う
+J7に取り付けます。
 
 MicroSD Card Adapterについているピンヘッダを除去してハンダ付けするのが一番確実ですが、J4の穴にMicroSD Card Adapterをぴったりと押しつけ、裏から多めにハンダを流し込むことでハンダ付けをする方法もあります。なお、この方法の時にはしっかりハンダ付けが出来たかテスターで導通を確認しておいた方が安心です。
 
 ハンダ付けに自信のない方はJ2の秋月電子通商　AE-microSD-LLCNVをお使いください。AE-microSD-LLCNVならパワーLED、アクセスLEDが付いています。
 
-![MicroSD Card Adapter1](https://github.com/yanataka60/PC-8001_SD/blob/main/JPEG/MicroSD%20Card%20Adapter(1).JPG)
-
-![MicroSD Card Adapter2](https://github.com/yanataka60/PC-8001_SD/blob/main/JPEG/MicroSD%20Card%20Adapter(2).JPG)
-
-![MicroSD Card Adapter3](https://github.com/yanataka60/PC-8001_SD/blob/main/JPEG/MicroSD%20Card%20Adapter(3).JPG)
-
-![MicroSD Card Adapter4](https://github.com/yanataka60/PC-8001_SD/blob/main/JPEG/MicroSD%20Card%20Adapter(4).JPG)
-
-
 ![MicroSD Card Adapter](https://github.com/yanataka60/PC-8001_SD/blob/main/JPEG/MicroSD%20Card%20Adapter.JPG)
-
-### その他必要なもの
-
-　片側が2.54mmピッチ2x25Pinメスコネクタ、片側が2.54mmピッチ50pカードエッジコネクタのフラットケーブルを用意してください。
 
 ## ROMへの書込み
 　Z80フォルダ内のEXT_ROM.binをROMライター(TL866II Plus等)を使って2764又は28C64に書き込みます。
