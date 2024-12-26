@@ -59,7 +59,7 @@ RAMを拡張する場合
 
 　　　注1)秋月電子通商　AE-microSD-LLCNVのJ1ジャンパはショートしてください。
 
-　　　### 注2)Arduino Pro MiniはA4、A5ピンも使っています。
+### 　　　注2)Arduino Pro MiniはA4、A5ピンも使っています。
 
 　　　注3)J6又はJ7のどちらかを選択して取り付けてください。
 
