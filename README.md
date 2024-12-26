@@ -2,7 +2,7 @@
 
 ![JR-100_SD](https://github.com/yanataka60/JR-100_SD/blob/main/JPEG/TITLE.jpg)
 
-　JR-100でSD-CARDからPRG形式ファイルのロード、セーブ機能を実現するものです。
+　JR-100でSD-CARDからPROG形式ファイルのロード、セーブ機能を実現するものです。
 
 　CMTからの読み込み実行に数分掛かっていたゲームも数十秒で実行できます。
 
