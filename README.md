@@ -1,3 +1,4 @@
+                                   (画像はRev1.2基板を使っていますが公開バージョンはRev1.3です)
 # National JR-100にSD-CARDとのロード、セーブ機能
 
 ![JR-100_SD](https://github.com/yanataka60/JR-100_SD/blob/main/JPEG/TITLE.jpg)
