@@ -135,10 +135,12 @@ PROG形式の詳細については、ページ中ほどの「JR-100エミュレ�
 
 ## 使い方
 
-### JR-100_SD使用の準備
-まず初めにHCOPYコマンド(CTRL+B)を実行します。
+### JR-100_SDの準備
+JR-100を起動したらHCOPYコマンド(CTRL+B)を実行します。
 
-これでJR-100_SDが使えるようになり、もう一度HCOPYコマンド(CTRL+B)を実行するとCMTに戻ります。
+「JR-100_SD READY OK!」と表示されたらSD-CARDにアクセスできます。
+
+もう一度HCOPYコマンド(CTRL+B)を実行すると「CMT READY OK!」と表示されCMTに戻ります。
 
 HCOPYコマンド(CTRL+B)を実行する度にJR-100_SDとCMTが切り替わります。
 
