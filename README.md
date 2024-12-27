@@ -27,12 +27,12 @@
 |J4|コネクタ 2Pin|1|ピンヘッダで代用するときはGNDと間違えないよう1Pinで5Vだけにしたほうが良い|
 |J5|DCジャック|1|秋月電子通商 MJ-179PHなど|
 ||J6、J7のいずれか|||
-|J6|Micro_SD_Card_Kit|1|秋月電子通商 AE-microSD-LLCNV (注1) (注3)|
-|J7|MicroSD Card Adapter|1|Arduino等に使われる5V電源に対応したもの (注3)|
+|J6|Micro_SD_Card_Kit|1|秋月電子通商 AE-microSD-LLCNV (注1) (注2)|
+|J7|MicroSD Card Adapter|1|Arduino等に使われる5V電源に対応したもの (注2)|
 |U1|GAL22V10|1||
 |U3|ROM 2764/28C64相当品|1||
 |U5|8255|1||
-|U6|Arduino_Pro_Mini_5V|1|Atmega328版を使用 168版は不可。(注2)|
+|U6|Arduino_Pro_Mini_5V|1|Atmega328版を使用 168版は不可。(注3)|
 |C1,C2,C5|積層セラミックコンデンサ 0.1uF|3||
 |C6|電解コンデンサ 16v100uF|1||
 |S1|3Pスライドスイッチ|1|秋月電子通商 SS12D01G4など|
@@ -66,9 +66,9 @@ RAMを拡張する場合
 
 　　　注1)秋月電子通商　AE-microSD-LLCNVのJ1ジャンパはショートしてください。
 
-### 　　　注2)Arduino Pro MiniはA4、A5ピンも使っています。
+　　　注2)J6又はJ7のどちらかを選択して取り付けてください。
 
-　　　注3)J6又はJ7のどちらかを選択して取り付けてください。
+### 　　注3)Arduino Pro MiniはA4、A5ピンも使っています。
 
 ### MicroSD Card Adapterを使う
 J7に取り付けます。
