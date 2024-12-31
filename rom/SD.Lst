@@ -19,7 +19,7 @@
 0019	00EA			XSAVE2	EQU   	$00EA          	;Xレジスタ保存
 0020	00EC			ADRSK 	EQU   	$00EC          	;KSCN2 KTBL算出用/SD読込用 終了アドレス計算用
 0021	00EE			XSAVEK	EQU   	$00EE          	;KSCN2用 Xレジスタ保存
-0022	00F0			FNSIZ 	EQU   	$00F0          	;ファイルネーム文字数
+0022	00F0			PRGVER	EQU   	$00F0          	;PROG形式バージョン
 0023	00F2			ADRS2 	EQU   	$00F2          	;SD読込用 開始アドレス退避
 0024				
 0025	C800			KEYDAT	EQU   	$C800          	;キーデータ取得
@@ -53,29 +53,29 @@
 0053	D004	7E D045		      	JMP   	DUMMY          	;プリンタ一文字出力ジャンプ先
 0054	D007	7E D016		      	JMP   	INIT           	;HCOPYコマンドジャンプ先
 0055	D00A	7E D046		      	JMP   	LOAD           	
-0056	D00D	7E D1A2		      	JMP   	BSAVE          	
-0057	D010	7E D264		      	JMP   	MSAVE          	
-0058	D013	7E D32D		      	JMP   	FILES          	
+0056	D00D	7E D2DC		      	JMP   	BSAVE          	
+0057	D010	7E D39E		      	JMP   	MSAVE          	
+0058	D013	7E D467		      	JMP   	FILES          	
 0059				
 0060	D016	DF E8		INIT  	STX   	XSAVE          	;コマンド文字列終了位置を保存
-0061	D018	BD D699		      	JSR   	PIOINI         	;8255初期化
+0061	D018	BD D7EF		      	JSR   	PIOINI         	;8255初期化
 0062				
 0063	D01B	96 1A		      	LDAA  	BTPNT          	
 0064	D01D	81 F8		      	CMPA  	#$F8           	
 0065	D01F	26 0F		      	BNE   	INI2           	
-0066	D021	CE D6A6		      	LDX   	#BTBL          	
+0066	D021	CE D7FC		      	LDX   	#BTBL          	
 0067	D024	DF 1A		      	STX   	BTPNT          	;BASICコマンドポインタをBTBLに変更
-0068	D026	CE D6D7		      	LDX   	#CTBL          	
+0068	D026	CE D82D		      	LDX   	#CTBL          	
 0069	D029	DF 1C		      	STX   	CTPNT          	:BASICステートメントポインタをCBTLに変更
-0070	D02B	CE D598		      	LDX   	#SDMSG         	;'JR-100_SD READY OK!'
+0070	D02B	CE D6D2		      	LDX   	#SDMSG         	;'JR-100_SD READY OK!'
 0071	D02E	20 0F		      	BRA   	INI3           	
 0072	D030	DF E8		INI2  	STX   	XSAVE          	;コマンド文字列終了位置を保存
 0073	D032	CE F898		      	LDX   	#$F898         	
 0074	D035	DF 1A		      	STX   	BTPNT          	;BASICコマンドポインタを元に戻す
 0075	D037	CE F8C9		      	LDX   	#$F8C9         	
 0076	D03A	DF 1C		      	STX   	CTPNT          	:BASICステートメントポインタを元に戻す
-0077	D03C	CE D5AE		      	LDX   	#CMTMSG        	;'CMT OK!'
-0078	D03F	BD D402		INI3  	JSR   	STRPRN         	
+0077	D03C	CE D6E8		      	LDX   	#CMTMSG        	;'CMT OK!'
+0078	D03F	BD D53C		INI3  	JSR   	STRPRN         	
 0079	D042	DE E8		      	LDX   	XSAVE          	
 0080	D044	39		      	RTS   			
 0081				
@@ -85,8 +85,8 @@
 0085				;----------------- BASICプログラム、機械語プログラム LOAD ---------------------------
 0086	D046			LOAD  				
 0087	D046	86 80		      	LDAA  	#$80           	;コマンド$80を送信
-0088	D048	BD D678		      	JSR   	SNDBYTE        	;Aレジスタのコマンドコードを送信
-0089	D04B	BD D664		      	JSR   	RCVBYTE        	;状態取得($00=OK)
+0088	D048	BD D7CE		      	JSR   	SNDBYTE        	;Aレジスタのコマンドコードを送信
+0089	D04B	BD D7BA		      	JSR   	RCVBYTE        	;状態取得($00=OK)
 0090	D04E	4D		      	TSTA  			
 0091	D04F	26 41		      	BNE   	ERRJ           	
 0092				
@@ -99,20 +99,20 @@
 0099	D05C	27 0F		      	BEQ   	FN10           	
 0100	D05E	4D		      	TSTA  			;$00だったら32Byte以下でも終了
 0101	D05F	27 0C		      	BEQ   	FN10           	
-0102	D061	BD D678		      	JSR   	SNDBYTE        	
+0102	D061	BD D7CE		      	JSR   	SNDBYTE        	
 0103	D064	5A		      	DECB  			
 0104	D065	26 EC		      	BNE   	FN1            	
 0105	D067	4F		      	CLRA  			
-0106	D068	BD D678		      	JSR   	SNDBYTE        	;$00を送信
+0106	D068	BD D7CE		      	JSR   	SNDBYTE        	;$00を送信
 0107	D06B	20 0F		      	BRA   	FN12           	
 0108				
 0109	D06D	09		FN10  	DEX   			
 0110	D06E	DF E8		      	STX   	XSAVE          	;コマンド文字列終了位置を保存
 0111	D070	4F		      	CLRA  			
-0112	D071	BD D678		FN11  	JSR   	SNDBYTE        	;32Byteに満たない分を$00送信
+0112	D071	BD D7CE		FN11  	JSR   	SNDBYTE        	;32Byteに満たない分を$00送信
 0113	D074	5A		      	DECB  			
 0114	D075	26 FA		      	BNE   	FN11           	
-0115	D077	BD D678		      	JSR   	SNDBYTE        	;$00送信
+0115	D077	BD D7CE		      	JSR   	SNDBYTE        	;$00送信
 0116	D07A	20 0E		      	BRA   	FN14           	
 0117				
 0118	D07C	09		FN12  	DEX   			
@@ -126,789 +126,943 @@
 0126	D088	DF E8		      	STX   	XSAVE          	;コマンド文字列終了位置を保存
 0127				
 0128	D08A			FN14  				
-0129	D08A	BD D664		      	JSR   	RCVBYTE        	;状態取得($00=OK)
+0129	D08A	BD D7BA		      	JSR   	RCVBYTE        	;状態取得($00=OK)
 0130	D08D	4D		      	TSTA  			
 0131	D08E	26 02		      	BNE   	ERRJ           	
 0132	D090	20 03		      	BRA   	FN2            	
 0133				
-0134	D092	7E D179		ERRJ  	JMP   	ERR            	
+0134	D092	7E D2AA		ERRJ  	JMP   	ERR            	
 0135				
-0136	D095	BD D664		FN2   	JSR   	RCVBYTE        	;'P'
-0137	D098	BD D664		      	JSR   	RCVBYTE        	;'R'
-0138	D09B	BD D664		      	JSR   	RCVBYTE        	;'O'
-0139	D09E	BD D664		      	JSR   	RCVBYTE        	;'G'
-0140	D0A1	BD D664		      	JSR   	RCVBYTE        	;#$01 フォーマットバージョン
-0141	D0A4	BD D664		      	JSR   	RCVBYTE        	;#$00
-0142	D0A7	BD D664		      	JSR   	RCVBYTE        	;#$00
-0143	D0AA	BD D664		      	JSR   	RCVBYTE        	;#$00
-0144	D0AD	BD D664		      	JSR   	RCVBYTE        	;FNAME_SIZE 1stByte
-0145	D0B0	16		      	TAB   			
-0146	D0B1	BD D664		      	JSR   	RCVBYTE        	;SKIP FNAME_SIZE 2ndByte
-0147	D0B4	BD D664		      	JSR   	RCVBYTE        	;SKIP FNAME_SIZE 3rdByte
-0148	D0B7	BD D664		      	JSR   	RCVBYTE        	;SKIP FNAME_SIZE 4thByte
-0149	D0BA	CE 0030		      	LDX   	#KBUF          	;SDから送られてきたファイル名を格納
-0150	D0BD	BD D664		LD1   	JSR   	RCVBYTE        	;FNAME
-0151	D0C0	A7 00		      	STAA  	X              	
-0152	D0C2	08		      	INX   			
-0153	D0C3	5A		      	DECB  			
-0154	D0C4	26 F7		      	BNE   	LD1            	
-0155	D0C6	4F		      	CLRA  			
-0156	D0C7	A7 00		      	STAA  	X              	;ファイル名の最後に$00を追加
-0157				
-0158	D0C9	BD D664		      	JSR   	RCVBYTE        	;読み込みアドレス 1stByte
-0159	D0CC	97 E5		      	STAA  	ADRS+1         	
-0160	D0CE	97 F3		      	STAA  	ADRS2+1        	
-0161	D0D0	BD D664		      	JSR   	RCVBYTE        	;読み込みアドレス 2ndByte
-0162	D0D3	97 E4		      	STAA  	ADRS           	
-0163	D0D5	97 F2		      	STAA  	ADRS2          	
-0164	D0D7	BD D664		      	JSR   	RCVBYTE        	;SKIP 3rdByte
-0165	D0DA	BD D664		      	JSR   	RCVBYTE        	;SKIP 4thByte
+0136	D095	BD D7BA		FN2   	JSR   	RCVBYTE        	;'P'
+0137	D098	BD D7BA		      	JSR   	RCVBYTE        	;'R'
+0138	D09B	BD D7BA		      	JSR   	RCVBYTE        	;'O'
+0139	D09E	BD D7BA		      	JSR   	RCVBYTE        	;'G'
+0140	D0A1	BD D7BA		      	JSR   	RCVBYTE        	;フォーマットバージョン受信
+0141	D0A4	81 01		      	CMPA  	#$01           	
+0142	D0A6	27 0C		      	BEQ   	VER1           	;フォーマットバージョン1
+0143	D0A8	81 02		      	CMPA  	#$02           	
+0144	D0AA	27 05		      	BEQ   	VER2           	;フォーマットバージョン2
+0145	D0AC	86 F4		      	LDAA  	#$F4           	
+0146	D0AE	7E D092		      	JMP   	ERRJ           	;フォーマットバージョンエラー
+0147				
+0148	D0B1	7E D19A		VER2  	JMP   	VER21          	
+0149				;------------------------- PROGフォーマットバージョン1形式LOAD ---------------------
+0150	D0B4	BD D7BA		VER1  	JSR   	RCVBYTE        	;SKIP フォーマットバージョン 2nd Byte
+0151	D0B7	BD D7BA		      	JSR   	RCVBYTE        	;SKIP フォーマットバージョン 3rd Byte
+0152	D0BA	BD D7BA		      	JSR   	RCVBYTE        	;SKIP フォーマットバージョン 4th Byte
+0153	D0BD	BD D7BA		      	JSR   	RCVBYTE        	;FNAME_SIZE 1stByte
+0154	D0C0	16		      	TAB   			
+0155	D0C1	BD D7BA		      	JSR   	RCVBYTE        	;SKIP FNAME_SIZE 2ndByte
+0156	D0C4	BD D7BA		      	JSR   	RCVBYTE        	;SKIP FNAME_SIZE 3rdByte
+0157	D0C7	BD D7BA		      	JSR   	RCVBYTE        	;SKIP FNAME_SIZE 4thByte
+0158	D0CA	CE 0030		      	LDX   	#KBUF          	;SDから送られてきたファイル名を格納
+0159	D0CD	BD D7BA		LD1   	JSR   	RCVBYTE        	;FNAME
+0160	D0D0	A7 00		      	STAA  	X              	
+0161	D0D2	08		      	INX   			
+0162	D0D3	5A		      	DECB  			
+0163	D0D4	26 F7		      	BNE   	LD1            	
+0164	D0D6	4F		      	CLRA  			
+0165	D0D7	A7 00		      	STAA  	X              	;ファイル名の最後に$00を追加
 0166				
-0167	D0DD	BD D664		      	JSR   	RCVBYTE        	;読み込みByte数1st受信
-0168	D0E0	97 E7		      	STAA  	LENG+1         	
-0169	D0E2	BD D664		      	JSR   	RCVBYTE        	;読み込みByte数2nd受信
-0170	D0E5	97 E6		      	STAA  	LENG           	
-0171	D0E7	BD D664		      	JSR   	RCVBYTE        	;SKIP 3rd
-0172	D0EA	BD D664		      	JSR   	RCVBYTE        	;SKIP 4th
-0173				
-0174	D0ED	BD D664		      	JSR   	RCVBYTE        	;FLAG 1stByte 0:BASIC 1:マシン語
-0175	D0F0	97 E3		      	STAA  	FLG            	
-0176				
-0177	D0F2	4D		      	TSTA  			
-0178	D0F3	26 08		      	BNE   	LD2            	
-0179	D0F5	CE D5B8		      	LDX   	#BSMSG         	;BASICプログラムLOAD表示
-0180	D0F8	BD D402		      	JSR   	STRPRN         	
-0181	D0FB	20 06		      	BRA   	LD3            	
-0182	D0FD	CE D5C1		LD2   	LDX   	#BNMSG         	;マシン語LOAD表示
-0183	D100	BD D402		      	JSR   	STRPRN         	
-0184	D103	CE D5CB		LD3   	LDX   	#LDMSG         	;'LOADING '
-0185	D106	BD D402		      	JSR   	STRPRN         	
-0186	D109	CE 0030		      	LDX   	#KBUF          	;ファイル名
-0187	D10C	BD D402		      	JSR   	STRPRN         	
-0188	D10F	86 28		      	LDAA  	#'('           	
-0189	D111	BD F3BC		      	JSR   	PRINT          	
-0190	D114	96 E4		      	LDAA  	ADRS           	;読み込み開始アドレス表示
-0191	D116	BD D40F		      	JSR   	PRHEX          	
-0192	D119	96 E5		      	LDAA  	ADRS+1         	
-0193	D11B	BD D40F		      	JSR   	PRHEX          	
-0194				
-0195	D11E	86 2D		      	LDAA  	#'-'           	
-0196	D120	BD F3BC		      	JSR   	PRINT          	
-0197				
-0198	D123	96 E7		      	LDAA  	LENG+1         	
-0199	D125	9B E5		      	ADDA  	ADRS+1         	
-0200	D127	97 ED		      	STAA  	ADRSK+1        	
-0201	D129	96 E6		      	LDAA  	LENG           	
-0202	D12B	99 E4		      	ADCA  	ADRS           	
-0203	D12D	97 EC		      	STAA  	ADRSK          	
-0204	D12F	DE EC		      	LDX   	ADRSK          	
-0205	D131	09		      	DEX   			
-0206	D132	DF EC		      	STX   	ADRSK          	;(ADRSK) <- 読み込み開始アドレス+読み込みByte数-1
+0167	D0D9	BD D7BA		      	JSR   	RCVBYTE        	;読み込みアドレス 1stByte
+0168	D0DC	97 E5		      	STAA  	ADRS+1         	
+0169	D0DE	97 F3		      	STAA  	ADRS2+1        	
+0170	D0E0	BD D7BA		      	JSR   	RCVBYTE        	;読み込みアドレス 2ndByte
+0171	D0E3	97 E4		      	STAA  	ADRS           	
+0172	D0E5	97 F2		      	STAA  	ADRS2          	
+0173	D0E7	BD D7BA		      	JSR   	RCVBYTE        	;SKIP 3rdByte
+0174	D0EA	BD D7BA		      	JSR   	RCVBYTE        	;SKIP 4thByte
+0175				
+0176	D0ED	BD D7BA		      	JSR   	RCVBYTE        	;読み込みByte数1st受信
+0177	D0F0	97 E7		      	STAA  	LENG+1         	
+0178	D0F2	BD D7BA		      	JSR   	RCVBYTE        	;読み込みByte数2nd受信
+0179	D0F5	97 E6		      	STAA  	LENG           	
+0180	D0F7	BD D7BA		      	JSR   	RCVBYTE        	;SKIP 3rd
+0181	D0FA	BD D7BA		      	JSR   	RCVBYTE        	;SKIP 4th
+0182				
+0183	D0FD	BD D7BA		      	JSR   	RCVBYTE        	;FLAG 1stByte 0:BASIC 1:マシン語
+0184	D100	97 E3		      	STAA  	FLG            	
+0185				
+0186	D102	4D		      	TSTA  			
+0187	D103	26 14		      	BNE   	LD2            	
+0188	D105	CE D6F2		      	LDX   	#BSMSG         	;BASICプログラムLOAD表示
+0189	D108	BD D53C		      	JSR   	STRPRN         	
+0190	D10B	CE D705		      	LDX   	#LDMSG         	;'LOADING '
+0191	D10E	BD D53C		      	JSR   	STRPRN         	
+0192	D111	CE 0030		      	LDX   	#KBUF          	;ファイル名
+0193	D114	BD D53C		      	JSR   	STRPRN         	
+0194	D117	20 46		      	BRA   	LD3            	
+0195	D119	CE D6FB		LD2   	LDX   	#BNMSG         	;マシン語LOAD表示
+0196	D11C	BD D53C		      	JSR   	STRPRN         	
+0197	D11F	CE D705		      	LDX   	#LDMSG         	;'LOADING '
+0198	D122	BD D53C		      	JSR   	STRPRN         	
+0199	D125	CE 0030		      	LDX   	#KBUF          	;ファイル名
+0200	D128	BD D53C		      	JSR   	STRPRN         	
+0201	D12B	86 28		      	LDAA  	#'('           	
+0202	D12D	BD F3BC		      	JSR   	PRINT          	
+0203	D130	96 E4		      	LDAA  	ADRS           	;読み込み開始アドレス表示
+0204	D132	BD D549		      	JSR   	PRHEX          	
+0205	D135	96 E5		      	LDAA  	ADRS+1         	
+0206	D137	BD D549		      	JSR   	PRHEX          	
 0207				
-0208	D134	96 EC		      	LDAA  	ADRSK          	;読み込み終了アドレス表示
-0209	D136	BD D40F		      	JSR   	PRHEX          	
-0210	D139	96 ED		      	LDAA  	ADRSK+1        	
-0211	D13B	BD D40F		      	JSR   	PRHEX          	
-0212	D13E	86 29		      	LDAA  	#')'           	
-0213	D140	BD F3BC		      	JSR   	PRINT          	
-0214	D143	CE D5E0		      	LDX   	#CRLF          	;CRLF
-0215	D146	BD D402		      	JSR   	STRPRN         	
-0216				
-0217	D149	BD D664		      	JSR   	RCVBYTE        	;SKIP 2ndByte
-0218	D14C	BD D664		      	JSR   	RCVBYTE        	;SKIP 3rdByte
-0219	D14F	BD D664		      	JSR   	RCVBYTE        	;SKIP 4thByte
+0208	D13A	86 2D		      	LDAA  	#'-'           	
+0209	D13C	BD F3BC		      	JSR   	PRINT          	
+0210				
+0211	D13F	96 E7		      	LDAA  	LENG+1         	
+0212	D141	9B E5		      	ADDA  	ADRS+1         	
+0213	D143	97 ED		      	STAA  	ADRSK+1        	
+0214	D145	96 E6		      	LDAA  	LENG           	
+0215	D147	99 E4		      	ADCA  	ADRS           	
+0216	D149	97 EC		      	STAA  	ADRSK          	
+0217	D14B	DE EC		      	LDX   	ADRSK          	
+0218	D14D	09		      	DEX   			
+0219	D14E	DF EC		      	STX   	ADRSK          	;(ADRSK) <- 読み込み開始アドレス+読み込みByte数-1
 0220				
-0221	D152	DE E4		LOP1  	LDX   	ADRS           	
-0222	D154	BD D664		      	JSR   	RCVBYTE        	;1Byte受信
-0223	D157	A7 00		      	STAA  	X              	;(X) <- A
-0224	D159	08		      	INX   			;X <- X+1
-0225	D15A	DF E4		      	STX   	ADRS           	
-0226				
-0227	D15C	DE E6		      	LDX   	LENG           	
-0228	D15E	09		      	DEX   			
-0229	D15F	DF E6		      	STX   	LENG           	;(LENG) <- (LENG) -1
-0230	D161	26 EF		      	BNE   	LOP1           	;(LENG)が0になるまでループ
-0231				
-0232	D163	96 E3		      	LDAA  	FLG            	;FLG CHECK 1(マシン語)なら終了
-0233	D165	4D		      	TSTA  			
-0234	D166	26 0E		      	BNE   	LOP2           	
-0235				
-0236	D168	DE E4		      	LDX   	ADRS           	;0ならBASICパラメータをセット
-0237	D16A	09		      	DEX   			
-0238	D16B	DF 06		      	STX   	BEND           	;BASICプログラムエンドアドレスセット
-0239	D16D	08		      	INX   			
-0240	D16E	DF 08		      	STX   	HEND           	;配列エンドアドレスセット
-0241	D170	08		      	INX   			
-0242	D171	DF 0A		      	STX   	V2END          	;2文字変数アドレスセット
-0243	D173	08		      	INX   			
-0244	D174	DF 0C		      	STX   	SEND           	;文字列変数アドレスセット
+0221	D150	96 EC		      	LDAA  	ADRSK          	;読み込み終了アドレス表示
+0222	D152	BD D549		      	JSR   	PRHEX          	
+0223	D155	96 ED		      	LDAA  	ADRSK+1        	
+0224	D157	BD D549		      	JSR   	PRHEX          	
+0225	D15A	86 29		      	LDAA  	#')'           	
+0226	D15C	BD F3BC		      	JSR   	PRINT          	
+0227	D15F	CE D71A		LD3   	LDX   	#CRLF          	;CRLF
+0228	D162	BD D53C		      	JSR   	STRPRN         	
+0229				
+0230	D165	BD D7BA		      	JSR   	RCVBYTE        	;SKIP 2ndByte
+0231	D168	BD D7BA		      	JSR   	RCVBYTE        	;SKIP 3rdByte
+0232	D16B	BD D7BA		      	JSR   	RCVBYTE        	;SKIP 4thByte
+0233				
+0234				;------------------- 実データ受信 --------------------------------
+0235	D16E	DE E4		LOP1  	LDX   	ADRS           	
+0236	D170	BD D7BA		      	JSR   	RCVBYTE        	;1Byte受信
+0237	D173	A7 00		      	STAA  	X              	;(X) <- A
+0238	D175	08		      	INX   			;X <- X+1
+0239	D176	DF E4		      	STX   	ADRS           	
+0240				
+0241	D178	DE E6		      	LDX   	LENG           	
+0242	D17A	09		      	DEX   			
+0243	D17B	DF E6		      	STX   	LENG           	;(LENG) <- (LENG) -1
+0244	D17D	26 EF		      	BNE   	LOP1           	;(LENG)が0になるまでループ
 0245				
-0246	D176	DE E8		LOP2  	LDX   	XSAVE          	;コマンド文字列終了位置を復帰
-0247	D178	39		      	RTS   			
-0248				
-0249	D179			ERR   				
-0250	D179	DF E8		      	STX   	XSAVE          	
-0251	D17B	81 F0		      	CMPA  	#$F0           	
-0252	D17D	26 05		      	BNE   	ERR1           	
-0253	D17F	CE D5E3		      	LDX   	#MSG_F0        	
-0254	D182	20 18		      	BRA   	ERRR           	
-0255	D184	81 F1		ERR1  	CMPA  	#$F1           	
-0256	D186	26 05		      	BNE   	ERR3           	
-0257	D188	CE D5FE		      	LDX   	#MSG_F1        	
-0258	D18B	20 0F		      	BRA   	ERRR           	
-0259	D18D	81 F3		ERR3  	CMPA  	#$F3           	
-0260	D18F	26 05		      	BNE   	ERR99          	
-0261	D191	CE D60E		      	LDX   	#MSG_F3        	
-0262	D194	20 06		      	BRA   	ERRR           	
-0263	D196			ERR99 				
-0264	D196	BD D40F		      	JSR   	PRHEX          	
-0265	D199	CE D61B		      	LDX   	#MSG99         	
-0266				
-0267	D19C	BD D402		ERRR  	JSR   	STRPRN         	
-0268	D19F	DE E8		      	LDX   	XSAVE          	
-0269	D1A1	39		      	RTS   			
-0270				
-0271				;--------------------- BASICプログラム SAVE ------------------------------------------
-0272	D1A2			BSAVE 				
-0273	D1A2	86 81		      	LDAA  	#$81           	;コマンド$81を送信
-0274	D1A4	BD D678		      	JSR   	SNDBYTE        	;Aレジスタのコマンドコードを送信
-0275	D1A7	BD D664		      	JSR   	RCVBYTE        	;状態取得($00=OK)
-0276	D1AA	4D		      	TSTA  			
-0277	D1AB	26 22		      	BNE   	ERRJ2          	
+0246	D17F	96 E3		      	LDAA  	FLG            	;FLG CHECK 1(マシン語)なら終了
+0247	D181	4D		      	TSTA  			
+0248	D182	26 0E		      	BNE   	LOP2           	
+0249				
+0250	D184	DE E4		      	LDX   	ADRS           	;0ならBASICパラメータをセット
+0251	D186	09		      	DEX   			
+0252	D187	DF 06		      	STX   	BEND           	;BASICプログラムエンドアドレスセット
+0253	D189	08		      	INX   			
+0254	D18A	DF 08		      	STX   	HEND           	;配列エンドアドレスセット
+0255	D18C	08		      	INX   			
+0256	D18D	DF 0A		      	STX   	V2END          	;2文字変数アドレスセット
+0257	D18F	08		      	INX   			
+0258	D190	DF 0C		      	STX   	SEND           	;文字列変数アドレスセット
+0259				
+0260	D192	DE E8		LOP2  	LDX   	XSAVE          	;コマンド文字列終了位置を復帰
+0261	D194	39		      	RTS   			
+0262				
+0263	D195	86 F4		ERRV  	LDAA  	#$F4           	
+0264	D197	7E D092		      	JMP   	ERRJ           	
+0265				
+0266				;------------------------- PROGフォーマットバージョン2形式LOAD ---------------------
+0267	D19A	BD D7BA		VER21 	JSR   	RCVBYTE        	;SKIP フォーマットバージョン 2nd Byte
+0268	D19D	BD D7BA		      	JSR   	RCVBYTE        	;SKIP フォーマットバージョン 3rd Byte
+0269	D1A0	BD D7BA		      	JSR   	RCVBYTE        	;SKIP フォーマットバージョン 4th Byte
+0270	D1A3	BD D7BA		      	JSR   	RCVBYTE        	;'P'
+0271	D1A6	BD D7BA		      	JSR   	RCVBYTE        	;'N'
+0272	D1A9	BD D7BA		      	JSR   	RCVBYTE        	;'A'
+0273	D1AC	BD D7BA		      	JSR   	RCVBYTE        	;'M'
+0274	D1AF	BD D7BA		      	JSR   	RCVBYTE        	;セクションSIZE 1stByte
+0275	D1B2	BD D7BA		      	JSR   	RCVBYTE        	;セクションSIZE 2ndByte
+0276	D1B5	BD D7BA		      	JSR   	RCVBYTE        	;セクションSIZE 3rdByte
+0277	D1B8	BD D7BA		      	JSR   	RCVBYTE        	;セクションSIZE 4thByte
 0278				
-0279	D1AD	DF E8		      	STX   	XSAVE          	;コマンド文字列終了位置を保存
-0280	D1AF	C6 20		      	LDAB  	#$20           	;(X)からのファイル名32Byteを送信
-0281	D1B1	A6 00		BSV1  	LDAA  	X              	
-0282	D1B3	08		      	INX   			
-0283	D1B4	81 22		      	CMPA  	#'"'           	;ダブルコーテーションは除去
-0284	D1B6	27 F9		      	BEQ   	BSV1           	
-0285	D1B8	81 3A		      	CMPA  	#':'           	;コロンなら$00にして送信
-0286	D1BA	26 01		      	BNE   	BSV10          	
-0287	D1BC	4F		      	CLRA  			
-0288	D1BD	BD D678		BSV10 	JSR   	SNDBYTE        	
-0289	D1C0	5A		      	DECB  			
-0290	D1C1	26 EE		      	BNE   	BSV1           	
-0291	D1C3	4F		      	CLRA  			
-0292	D1C4	BD D678		      	JSR   	SNDBYTE        	;$00送信
-0293				
-0294	D1C7	BD D664		      	JSR   	RCVBYTE        	;状態取得($00=OK)
-0295	D1CA	4D		      	TSTA  			
-0296	D1CB	26 02		      	BNE   	ERRJ2          	;$00以外ならエラー
-0297	D1CD	20 03		      	BRA   	BSV2           	
-0298				
-0299	D1CF	7E D179		ERRJ2 	JMP   	ERR            	
-0300				
-0301	D1D2	4F		BSV2  	CLRA  			
-0302	D1D3	BD D678		      	JSR   	SNDBYTE        	;継続コード$00を送信
-0303	D1D6	8D 36		      	BSR   	FNSEND         	;ファイルネームをPROG形式用に送信
-0304				
-0305	D1D8	96 05		      	LDAA  	BSTA+1         	;BASICスタートアドレス下位バイトを送信
-0306	D1DA	BD D678		      	JSR   	SNDBYTE        	
-0307	D1DD	96 04		      	LDAA  	BSTA           	;BASICスタートアドレス上位バイトを送信
-0308	D1DF	BD D678		      	JSR   	SNDBYTE        	
-0309				
-0310	D1E2	DE 04		      	LDX   	BSTA           	
-0311	D1E4	DF E4		      	STX   	ADRS           	;BASICスタートアドレスを(ADRS)にコピー
-0312	D1E6	96 07		      	LDAA  	BEND+1         	
-0313	D1E8	90 05		      	SUBA  	BSTA+1         	
-0314	D1EA	97 E7		      	STAA  	LENG+1         	
-0315	D1EC	96 06		      	LDAA  	BEND           	
-0316	D1EE	92 04		      	SBCA  	BSTA           	
-0317	D1F0	97 E6		      	STAA  	LENG           	;BASICエンドアドレス-BASICスタートアドレスを計算して(LENG)に格納
-0318	D1F2	DE E6		      	LDX   	LENG           	
-0319	D1F4	08		      	INX   			;BEND - BSTART +1
-0320	D1F5	DF E6		      	STX   	LENG           	
-0321				
-0322	D1F7	96 E7		      	LDAA  	LENG+1         	;ファイルサイズ下位バイトを送信
-0323	D1F9	BD D678		      	JSR   	SNDBYTE        	
-0324	D1FC	96 E6		      	LDAA  	LENG           	;ファイルサイズ上位バイトを送信
-0325	D1FE	BD D678		      	JSR   	SNDBYTE        	
-0326				
-0327	D201	4F		      	CLRA  			;BASICプログラムであること(0)を送信
-0328	D202	BD D678		      	JSR   	SNDBYTE        	
-0329				
-0330	D205	CE D5D4		      	LDX   	#SVMSG         	;SAVE表示
-0331	D208	BD D402		      	JSR   	STRPRN         	
-0332				
-0333	D20B	8D 45		      	BSR   	BDSEND         	;BASICプログラムを送信
-0334	D20D	39		      	RTS   			
+0279	D1BB	BD D7BA		      	JSR   	RCVBYTE        	;FNAME_SIZE 1stByte
+0280	D1BE	16		      	TAB   			
+0281	D1BF	BD D7BA		      	JSR   	RCVBYTE        	;SKIP FNAME_SIZE 2ndByte
+0282	D1C2	BD D7BA		      	JSR   	RCVBYTE        	;SKIP FNAME_SIZE 3rdByte
+0283	D1C5	BD D7BA		      	JSR   	RCVBYTE        	;SKIP FNAME_SIZE 4thByte
+0284	D1C8	CE 0030		      	LDX   	#KBUF          	;SDから送られてきたファイル名を格納
+0285	D1CB	BD D7BA		LV1   	JSR   	RCVBYTE        	;FNAME
+0286	D1CE	A7 00		      	STAA  	X              	
+0287	D1D0	08		      	INX   			
+0288	D1D1	5A		      	DECB  			
+0289	D1D2	26 F7		      	BNE   	LV1            	
+0290	D1D4	4F		      	CLRA  			
+0291	D1D5	A7 00		      	STAA  	X              	;ファイル名の最後に$00を追加
+0292				
+0293	D1D7	BD D7BA		      	JSR   	RCVBYTE        	;SKIP 'P'
+0294	D1DA	BD D7BA		      	JSR   	RCVBYTE        	;SKIP 'B'
+0295	D1DD	BD D7BA		      	JSR   	RCVBYTE        	;'I' or 'A'
+0296	D1E0	16		      	TAB   			
+0297	D1E1	BD D7BA		      	JSR   	RCVBYTE        	;SKIP 'N' or 'S'
+0298	D1E4	C1 49		      	CMPB  	#'I'           	
+0299	D1E6	26 2B		      	BNE   	LVBAS          	
+0300				;------------ PROGフォーマットバージョン2形式 BINARY LOAD ---------------------
+0301	D1E8	86 01		LVBIN 	LDAA  	#$01           	
+0302	D1EA	97 E3		      	STAA  	FLG            	
+0303	D1EC	BD D7BA		      	JSR   	RCVBYTE        	;セクションSIZE 1stByte
+0304	D1EF	BD D7BA		      	JSR   	RCVBYTE        	;セクションSIZE 2ndByte
+0305	D1F2	BD D7BA		      	JSR   	RCVBYTE        	;セクションSIZE 3rdByte
+0306	D1F5	BD D7BA		      	JSR   	RCVBYTE        	;セクションSIZE 4thByte
+0307	D1F8	BD D7BA		      	JSR   	RCVBYTE        	;読み込みアドレス 1stByte
+0308	D1FB	97 E5		      	STAA  	ADRS+1         	
+0309	D1FD	97 F3		      	STAA  	ADRS2+1        	
+0310	D1FF	BD D7BA		      	JSR   	RCVBYTE        	;読み込みアドレス 2ndByte
+0311	D202	97 E4		      	STAA  	ADRS           	
+0312	D204	97 F2		      	STAA  	ADRS2          	
+0313	D206	BD D7BA		      	JSR   	RCVBYTE        	;SKIP 3rdByte
+0314	D209	BD D7BA		      	JSR   	RCVBYTE        	;SKIP 4thByte
+0315	D20C	20 24		      	BRA   	LV5            	
+0316				
+0317	D20E	86 F4		ERRV2 	LDAA  	#$F4           	
+0318	D210	7E D092		      	JMP   	ERRJ           	
+0319				
+0320				;------------ PROGフォーマットバージョン2形式 BASIC LOAD ---------------------
+0321	D213	C1 41		LVBAS 	CMPB  	#'A'           	
+0322	D215	26 F7		      	BNE   	ERRV2          	
+0323	D217	4F		      	CLRA  			
+0324	D218	97 E3		      	STAA  	FLG            	
+0325	D21A	BD D7BA		      	JSR   	RCVBYTE        	;セクションSIZE 1stByte
+0326	D21D	BD D7BA		      	JSR   	RCVBYTE        	;セクションSIZE 2ndByte
+0327	D220	BD D7BA		      	JSR   	RCVBYTE        	;セクションSIZE 3rdByte
+0328	D223	BD D7BA		      	JSR   	RCVBYTE        	;セクションSIZE 4thByte
+0329	D226	86 02		      	LDAA  	#$02           	;BASICなら読込開始アドレスは$0246固定
+0330	D228	97 E5		      	STAA  	ADRS+1         	
+0331	D22A	97 F3		      	STAA  	ADRS2+1        	
+0332	D22C	86 46		      	LDAA  	#$46           	
+0333	D22E	97 E4		      	STAA  	ADRS           	
+0334	D230	97 F2		      	STAA  	ADRS2          	
 0335				
-0336				;------------------- ファイルネームをPROG形式用に送信 ----------------------
-0337	D20E	DE E8		FNSEND	LDX   	XSAVE          	;コマンド文字列終了位置を復帰
-0338	D210	5F		      	CLRB  			
-0339	D211	A6 00		FNS3  	LDAA  	X              	;ファイルネーム文字数をカウント
-0340	D213	08		      	INX   			
-0341	D214	81 22		      	CMPA  	#'"'           	;ダブルコーテーションは飛ばす
-0342	D216	27 F9		      	BEQ   	FNS3           	
-0343	D218	5C		      	INCB  			
-0344	D219	81 3A		      	CMPA  	#':'           	;コロンが見つかったら終了
-0345	D21B	27 0D		      	BEQ   	FNS4           	
-0346	D21D	81 2C		      	CMPA  	#','           	;コンマが見つかったら終了
-0347	D21F	27 09		      	BEQ   	FNS4           	
-0348	D221	4D		      	TSTA  			;$00が見つかったら終了
-0349	D222	27 06		      	BEQ   	FNS4           	
-0350	D224	C1 11		      	CMPB  	#$11           	;ファイルネームが16文字以上だったら終了
-0351	D226	27 02		      	BEQ   	FNS4           	
-0352	D228	20 E7		      	BRA   	FNS3           	
-0353	D22A	5A		FNS4  	DECB  			
-0354	D22B	17		      	TBA   			
-0355				
-0356	D22C	BD D678		      	JSR   	SNDBYTE        	;FNAME_SIZE 1stByte
-0357	D22F	DE E8		      	LDX   	XSAVE          	
-0358	D231	A6 00		FNS5  	LDAA  	X              	;ファイルネーム文字数分のファイルネームを送信
-0359	D233	08		      	INX   			
-0360	D234	81 22		      	CMPA  	#'"'           	;ダブルコーテーションは飛ばす
-0361	D236	27 F9		      	BEQ   	FNS5           	
-0362	D238	BD D678		      	JSR   	SNDBYTE        	;ファイルネーム文字数分を送信
-0363	D23B	5A		      	DECB  			
-0364	D23C	26 F3		      	BNE   	FNS5           	
+0336	D232	BD D7BA		LV5   	JSR   	RCVBYTE        	;読み込みByte数1st受信
+0337	D235	97 E7		      	STAA  	LENG+1         	
+0338	D237	BD D7BA		      	JSR   	RCVBYTE        	;読み込みByte数2nd受信
+0339	D23A	97 E6		      	STAA  	LENG           	
+0340	D23C	BD D7BA		      	JSR   	RCVBYTE        	;SKIP 3rd
+0341	D23F	BD D7BA		      	JSR   	RCVBYTE        	;SKIP 4th
+0342				
+0343	D242	96 E3		      	LDAA  	FLG            	
+0344	D244	4D		      	TSTA  			
+0345	D245	26 14		      	BNE   	LV2            	
+0346	D247	CE D6F2		      	LDX   	#BSMSG         	;BASICプログラムLOAD表示
+0347	D24A	BD D53C		      	JSR   	STRPRN         	
+0348	D24D	CE D705		      	LDX   	#LDMSG         	;'LOADING '
+0349	D250	BD D53C		      	JSR   	STRPRN         	
+0350	D253	CE 0030		      	LDX   	#KBUF          	;ファイル名
+0351	D256	BD D53C		      	JSR   	STRPRN         	
+0352	D259	20 46		      	BRA   	LV3            	
+0353	D25B	CE D6FB		LV2   	LDX   	#BNMSG         	;マシン語LOAD表示
+0354	D25E	BD D53C		      	JSR   	STRPRN         	
+0355	D261	CE D705		      	LDX   	#LDMSG         	;'LOADING '
+0356	D264	BD D53C		      	JSR   	STRPRN         	
+0357	D267	CE 0030		      	LDX   	#KBUF          	;ファイル名
+0358	D26A	BD D53C		      	JSR   	STRPRN         	
+0359	D26D	86 28		      	LDAA  	#'('           	
+0360	D26F	BD F3BC		      	JSR   	PRINT          	
+0361	D272	96 E4		      	LDAA  	ADRS           	;読み込み開始アドレス表示
+0362	D274	BD D549		      	JSR   	PRHEX          	
+0363	D277	96 E5		      	LDAA  	ADRS+1         	
+0364	D279	BD D549		      	JSR   	PRHEX          	
 0365				
-0366	D23E	A6 00		FNS6  	LDAA  	X              	;ファイルネームが16文字以上だった場合、コンマ、コロン又は$00が見つかるまでコマンド文字列終了位置を修正
-0367	D240	08		      	INX   			
-0368	D241	81 3A		      	CMPA  	#':'           	
-0369	D243	27 09		      	BEQ   	FNS7           	
-0370	D245	81 2C		      	CMPA  	#','           	
-0371	D247	27 05		      	BEQ   	FNS7           	
-0372	D249	4D		      	TSTA  			
-0373	D24A	27 02		      	BEQ   	FNS7           	
-0374	D24C	20 F0		      	BRA   	FNS6           	
-0375	D24E	09		FNS7  	DEX   			
-0376	D24F	DF E8		      	STX   	XSAVE          	
-0377	D251	39		      	RTS   			
+0366	D27C	86 2D		      	LDAA  	#'-'           	
+0367	D27E	BD F3BC		      	JSR   	PRINT          	
+0368				
+0369	D281	96 E7		      	LDAA  	LENG+1         	
+0370	D283	9B E5		      	ADDA  	ADRS+1         	
+0371	D285	97 ED		      	STAA  	ADRSK+1        	
+0372	D287	96 E6		      	LDAA  	LENG           	
+0373	D289	99 E4		      	ADCA  	ADRS           	
+0374	D28B	97 EC		      	STAA  	ADRSK          	
+0375	D28D	DE EC		      	LDX   	ADRSK          	
+0376	D28F	09		      	DEX   			
+0377	D290	DF EC		      	STX   	ADRSK          	;(ADRSK) <- 読み込み開始アドレス+読み込みByte数-1
 0378				
-0379				;----------- (ADRS)から(LENG)バイトを送信 -----------------------
-0380	D252	DE E4		BDSEND	LDX   	ADRS           	;ファイルサイズ分を送信
-0381	D254	A6 00		      	LDAA  	X              	;A <- (ADRS)
-0382	D256	BD D678		      	JSR   	SNDBYTE        	;1Byte送信
-0383	D259	08		      	INX   			;X <- X+1
-0384	D25A	DF E4		      	STX   	ADRS           	;(ADRS) <- (ADRS)+1
-0385				
-0386	D25C	DE E6		      	LDX   	LENG           	;X <- (LENG)
-0387	D25E	09		      	DEX   			;X <- X-1
-0388	D25F	DF E6		      	STX   	LENG           	;(LENG) <- (LENG)-1
-0389	D261	26 EF		      	BNE   	BDSEND         	;(LENG)が0になるまでループ
-0390	D263	39		      	RTS   			
-0391				
-0392				;------------------ 機械語プログラムをSAVE ------------------------
-0393	D264			MSAVE 				
-0394	D264	86 81		      	LDAA  	#$81           	;コマンド$81を送信
-0395	D266	BD D678		      	JSR   	SNDBYTE        	;Aレジスタのコマンドコードを送信
-0396	D269	BD D664		      	JSR   	RCVBYTE        	;状態取得($00=OK)
-0397	D26C	4D		      	TSTA  			
-0398	D26D	26 28		      	BNE   	ERRJ3          	
-0399				
-0400	D26F	DF E8		      	STX   	XSAVE          	;コマンド文字列終了位置を保存
-0401	D271	C6 20		      	LDAB  	#$20           	;(X)からのファイル名32Byteを送信
-0402	D273	A6 00		MSV1  	LDAA  	X              	
-0403	D275	08		      	INX   			
-0404	D276	81 22		      	CMPA  	#'"'           	;ダブルコーテーションは除去
-0405	D278	27 F9		      	BEQ   	MSV1           	
-0406	D27A	81 3A		      	CMPA  	#':'           	;コロンなら$00にして送信
-0407	D27C	27 06		      	BEQ   	MSV2           	
-0408	D27E	81 2C		      	CMPA  	#','           	;コンマなら$00にして送信
-0409	D280	27 02		      	BEQ   	MSV2           	
-0410	D282	20 01		      	BRA   	MSV10          	
-0411	D284	4F		MSV2  	CLRA  			
-0412	D285	BD D678		MSV10 	JSR   	SNDBYTE        	
-0413	D288	5A		      	DECB  			
-0414	D289	26 E8		      	BNE   	MSV1           	
-0415	D28B	4F		      	CLRA  			
-0416	D28C	BD D678		      	JSR   	SNDBYTE        	;$00送信
-0417				
-0418	D28F	BD D664		      	JSR   	RCVBYTE        	;状態取得($00=OK)
-0419	D292	4D		      	TSTA  			
-0420	D293	26 02		      	BNE   	ERRJ3          	;$00以外ならエラー
-0421	D295	20 03		      	BRA   	MSV3           	
+0379	D292	96 EC		      	LDAA  	ADRSK          	;読み込み終了アドレス表示
+0380	D294	BD D549		      	JSR   	PRHEX          	
+0381	D297	96 ED		      	LDAA  	ADRSK+1        	
+0382	D299	BD D549		      	JSR   	PRHEX          	
+0383	D29C	86 29		      	LDAA  	#')'           	
+0384	D29E	BD F3BC		      	JSR   	PRINT          	
+0385	D2A1	CE D71A		LV3   	LDX   	#CRLF          	;CRLF
+0386	D2A4	BD D53C		      	JSR   	STRPRN         	
+0387	D2A7	7E D16E		      	JMP   	LOP1           	
+0388				
+0389	D2AA			ERR   				
+0390	D2AA	DF E8		      	STX   	XSAVE          	
+0391	D2AC	81 F0		      	CMPA  	#$F0           	
+0392	D2AE	26 05		      	BNE   	ERR1           	
+0393	D2B0	CE D71D		      	LDX   	#MSG_F0        	
+0394	D2B3	20 21		      	BRA   	ERRR           	
+0395	D2B5	81 F1		ERR1  	CMPA  	#$F1           	
+0396	D2B7	26 05		      	BNE   	ERR3           	
+0397	D2B9	CE D738		      	LDX   	#MSG_F1        	
+0398	D2BC	20 18		      	BRA   	ERRR           	
+0399	D2BE	81 F3		ERR3  	CMPA  	#$F3           	
+0400	D2C0	26 05		      	BNE   	ERR4           	
+0401	D2C2	CE D748		      	LDX   	#MSG_F3        	
+0402	D2C5	20 0F		      	BRA   	ERRR           	
+0403	D2C7	81 F4		ERR4  	CMPA  	#$F4           	
+0404	D2C9	26 05		      	BNE   	ERR99          	
+0405	D2CB	CE D755		      	LDX   	#MSG_F4        	
+0406	D2CE	20 06		      	BRA   	ERRR           	
+0407	D2D0			ERR99 				
+0408	D2D0	BD D549		      	JSR   	PRHEX          	
+0409	D2D3	CE D771		      	LDX   	#MSG99         	
+0410				
+0411	D2D6	BD D53C		ERRR  	JSR   	STRPRN         	
+0412	D2D9	DE E8		      	LDX   	XSAVE          	
+0413	D2DB	39		      	RTS   			
+0414				
+0415				;--------------------- BASICプログラム SAVE ------------------------------------------
+0416	D2DC			BSAVE 				
+0417	D2DC	86 81		      	LDAA  	#$81           	;コマンド$81を送信
+0418	D2DE	BD D7CE		      	JSR   	SNDBYTE        	;Aレジスタのコマンドコードを送信
+0419	D2E1	BD D7BA		      	JSR   	RCVBYTE        	;状態取得($00=OK)
+0420	D2E4	4D		      	TSTA  			
+0421	D2E5	26 22		      	BNE   	ERRJ2          	
 0422				
-0423	D297	7E D179		ERRJ3 	JMP   	ERR            	
-0424				
-0425	D29A	DE E8		MSV3  	LDX   	XSAVE          	;コマンド文字列終了位置を復帰
-0426	D29C	A6 00		MSV4  	LDAA  	X              	;ファイルネーム部分を読み飛ばし
-0427	D29E	08		      	INX   			
-0428	D29F	81 3A		      	CMPA  	#':'           	;コロンが見つかったら終了
-0429	D2A1	27 09		      	BEQ   	MSV5           	
-0430	D2A3	81 2C		      	CMPA  	#','           	;コンマが見つかったら終了
-0431	D2A5	27 05		      	BEQ   	MSV5           	
-0432	D2A7	4D		      	TSTA  			;$00が見つかったら終了
-0433	D2A8	27 02		      	BEQ   	MSV5           	
-0434	D2AA	20 F0		      	BRA   	MSV4           	
-0435	D2AC	A6 00		MSV5  	LDAA  	X              	
-0436	D2AE	81 24		      	CMPA  	#'$'           	;'$'は読み飛ばす
-0437	D2B0	26 01		      	BNE   	MSV6           	
-0438	D2B2	08		      	INX   			
-0439	D2B3	BD D42C		MSV6  	JSR   	SHEX2          	;16進数2桁のアスキーコードを16進数に変換
-0440	D2B6	25 64		      	BCS   	ERRJ4          	;16進数2桁を表すアスキーコードで無ければエラー
-0441	D2B8	97 E4		      	STAA  	ADRS           	;開始アドレス上位バイトにセット
-0442	D2BA	BD D42C		      	JSR   	SHEX2          	;16進数2桁のアスキーコードを16進数に変換
-0443	D2BD	25 5D		      	BCS   	ERRJ4          	;16進数2桁を表すアスキーコードで無ければエラー
-0444	D2BF	97 E5		      	STAA  	ADRS+1         	;開始アドレス下位バイトにセット
-0445	D2C1	A6 00		      	LDAA  	X              	
-0446	D2C3	81 2C		      	CMPA  	#','           	;コンマは読み飛ばす
-0447	D2C5	26 01		      	BNE   	MSV8           	
-0448	D2C7	08		      	INX   			
-0449	D2C8	A6 00		MSV8  	LDAA  	X              	
-0450	D2CA	81 24		      	CMPA  	#'$'           	;'$'は読み飛ばす
-0451	D2CC	26 01		      	BNE   	MSV9           	
-0452	D2CE	08		      	INX   			
-0453	D2CF	BD D42C		MSV9  	JSR   	SHEX2          	;16進数2桁のアスキーコードを16進数に変換
-0454	D2D2	25 48		      	BCS   	ERRJ4          	;16進数2桁を表すアスキーコードで無ければエラー
-0455	D2D4	97 E6		      	STAA  	LENG           	;終了アドレス上位バイトにセット
-0456	D2D6	BD D42C		      	JSR   	SHEX2          	;16進数2桁のアスキーコードを16進数に変換
-0457	D2D9	25 41		      	BCS   	ERRJ4          	;16進数2桁を表すアスキーコードで無ければエラー
-0458	D2DB	97 E7		      	STAA  	LENG+1         	;終了アドレス下位バイトにセット
-0459	D2DD	DF EA		      	STX   	XSAVE2         	;コマンド文字列終了位置を保存
-0460				
-0461	D2DF	96 E7		      	LDAA  	LENG+1         	
-0462	D2E1	90 E5		      	SUBA  	ADRS+1         	
-0463	D2E3	97 E7		      	STAA  	LENG+1         	
-0464	D2E5	96 E6		      	LDAA  	LENG           	
-0465	D2E7	92 E4		      	SBCA  	ADRS           	
-0466	D2E9	25 31		      	BCS   	ERRJ4          	
-0467	D2EB	97 E6		      	STAA  	LENG           	;終了アドレス-開始アドレスを計算して(LENG)に格納
-0468	D2ED	DE E6		      	LDX   	LENG           	
-0469	D2EF	08		      	INX   			;LENG - ADRS +1
-0470	D2F0	DF E6		      	STX   	LENG           	
-0471				
-0472	D2F2	4F		      	CLRA  			
-0473	D2F3	BD D678		      	JSR   	SNDBYTE        	;継続コード$00を送信
-0474	D2F6	BD D20E		      	JSR   	FNSEND         	;ファイルネームをPROG形式用に送信
-0475				
-0476	D2F9	96 E5		      	LDAA  	ADRS+1         	;BASICスタートアドレス下位バイトを送信
-0477	D2FB	BD D678		      	JSR   	SNDBYTE        	
-0478	D2FE	96 E4		      	LDAA  	ADRS           	;BASICスタートアドレス上位バイトを送信
-0479	D300	BD D678		      	JSR   	SNDBYTE        	
-0480				
-0481	D303	96 E7		      	LDAA  	LENG+1         	;ファイルサイズ下位バイトを送信
-0482	D305	BD D678		      	JSR   	SNDBYTE        	
-0483	D308	96 E6		      	LDAA  	LENG           	;ファイルサイズ上位バイトを送信
-0484	D30A	BD D678		      	JSR   	SNDBYTE        	
-0485				
-0486	D30D	86 01		      	LDAA  	#$01           	;機械語プログラムであること(1)を送信
-0487	D30F	BD D678		      	JSR   	SNDBYTE        	
-0488				
-0489	D312	CE D5D4		      	LDX   	#SVMSG         	;SAVE表示
-0490	D315	BD D402		      	JSR   	STRPRN         	
-0491				
-0492	D318	BD D252		      	JSR   	BDSEND         	;機械語データを送信
-0493	D31B	39		      	RTS   			
-0494				
-0495	D31C			ERRJ4 				
-0496	D31C	86 FF		      	LDAA  	#$FF           	;打ち切りコードを送信
-0497	D31E	BD D678		      	JSR   	SNDBYTE        	
-0498	D321	CE D624		      	LDX   	#MSG_AD        	;アドレスエラー表示
-0499	D324	BD D402		      	JSR   	STRPRN         	
-0500	D327	DE E8		      	LDX   	XSAVE          	
-0501	D329	39		      	RTS   			
-0502				
-0503				;------------------ SDファイル一覧表示 ---------------------------
-0504	D32A	7E D179		ERRJ5 	JMP   	ERR            	;ERROR処理へジャンプ
-0505				
-0506	D32D			FILES 				
-0507				*「SDIR」処理
-0508	D32D			SDIR_PRG				
-0509	D32D	86 82		      	LDAA  	#$82           	;コマンド$82を送信
-0510	D32F	BD D678		      	JSR   	SNDBYTE        	;Aレジスタのコマンドコードを送信
-0511	D332	BD D664		      	JSR   	RCVBYTE        	;状態取得(00H=OK)
-0512	D335	4D		      	TSTA  			
-0513	D336	26 F2		      	BNE   	ERRJ5          	;ERROR
-0514				
-0515	D338	DF E8		      	STX   	XSAVE          	;コマンド文字列終了位置を保存
-0516	D33A	C6 20		      	LDAB  	#$20           	;(X)からのファイル名32Byteを送信
-0517	D33C	A6 00		SDR1  	LDAA  	X              	
-0518	D33E	08		      	INX   			
-0519	D33F	81 22		      	CMPA  	#'"'           	;ダブルコーテーションは除去
-0520	D341	27 F9		      	BEQ   	SDR1           	
-0521	D343	81 3A		      	CMPA  	#':'           	;コロンなら$00にして送信
-0522	D345	27 06		      	BEQ   	SDR2           	
-0523	D347	81 2C		      	CMPA  	#','           	;コンマなら$00にして送信
-0524	D349	27 02		      	BEQ   	SDR2           	
-0525	D34B	20 01		      	BRA   	SDR10          	
-0526	D34D	4F		SDR2  	CLRA  			
-0527	D34E	BD D678		SDR10 	JSR   	SNDBYTE        	;1文字送信
-0528	D351	5A		      	DECB  			
-0529	D352	26 E8		      	BNE   	SDR1           	
-0530	D354	4F		      	CLRA  			
-0531	D355	BD D678		      	JSR   	SNDBYTE        	;$00送信
-0532	D358	DF E8		      	STX   	XSAVE          	;コマンド文字列終了位置を保存
-0533				
-0534	D35A	BD D664		      	JSR   	RCVBYTE        	;状態取得($00=OK)
-0535	D35D	4D		      	TSTA  			
-0536	D35E	26 CA		      	BNE   	ERRJ5          	;$00以外ならエラー
-0537				
-0538	D360	CE 0030		DL1   	LDX   	#KBUF          	;Arduinoから送られてくる文字列を#KBUFへ格納
-0539	D363	BD D664		DL2   	JSR   	RCVBYTE        	
-0540	D366	BD D3F7		      	JSR   	AZLCNV         	;大文字に変換
-0541	D369	4D		      	TSTA  			
-0542	D36A	27 11		      	BEQ   	DL3            	;$00を受信するまでを一行とする
-0543	D36C	81 FF		      	CMPA  	#$FF           	
-0544	D36E	27 23		      	BEQ   	DL4            	;$FFを受信したら終了
-0545	D370	81 FD		      	CMPA  	#$FD           	
-0546	D372	27 25		      	BEQ   	DL9            	;$FD受信で文字列を取得してSETLしたことを表示
-0547	D374	81 FE		      	CMPA  	#$FE           	
-0548	D376	27 47		      	BEQ   	DL5            	;$FEを受信したら一時停止して一文字入力待ち
-0549	D378	A7 00		      	STAA  	X              	
-0550	D37A	08		      	INX   			
-0551	D37B	20 E6		      	BRA   	DL2            	
-0552				
-0553	D37D			DL3   				
-0554	D37D	86 0D		      	LDAA  	#$0D           	;$00を受信したら一行分を表示して改行
-0555	D37F	A7 00		      	STAA  	X              	
-0556	D381	08		      	INX   			
-0557	D382	86 0A		      	LDAA  	#$0A           	
-0558	D384	A7 00		      	STAA  	X              	
-0559	D386	08		      	INX   			
-0560				
-0561	D387	4F		      	CLRA  			
-0562	D388	A7 00		      	STAA  	X              	
-0563	D38A	08		      	INX   			
-0564	D38B	CE 0030		      	LDX   	#KBUF          	
-0565	D38E	BD D402		      	JSR   	STRPRN         	;1行表示
-0566	D391	20 CD		DL33  	BRA   	DL1            	
-0567				
-0568	D393	BD D664		DL4   	JSR   	RCVBYTE        	;状態取得(00H=OK)して終了
-0569	D396	DE E8		      	LDX   	XSAVE          	
-0570	D398	39		      	RTS   			
-0571				
-0572	D399	CE 0030		DL9   	LDX   	#KBUF          	;文字列を取得
-0573	D39C	BD D664		DL91  	JSR   	RCVBYTE        	;#KBUFへ文字列格納
-0574	D39F	BD D3F7		      	JSR   	AZLCNV         	;大文字に変換
-0575	D3A2	A7 00		      	STAA  	X              	
-0576	D3A4	08		      	INX   			
-0577	D3A5	4D		      	TSTA  			;$00を受信するまで受信処理
-0578	D3A6	26 F4		      	BNE   	DL91           	
-0579				;		LDX		#KBUF
-0580				;		JSR		STRPRN
-0581	D3A8	BD D664		      	JSR   	RCVBYTE        	;$FF終了コード読み飛ばし
-0582	D3AB	BD D664		      	JSR   	RCVBYTE        	;状態取得読み飛ばし
-0583	D3AE	CE 0030		      	LDX   	#KBUF          	
-0584	D3B1	86 80		      	LDAA  	#$80           	;コマンド$80を送信、そのままLOADコマンド実行
-0585	D3B3	BD D678		      	JSR   	SNDBYTE        	;Aレジスタのコマンドコードを送信
-0586	D3B6	BD D664		      	JSR   	RCVBYTE        	;状態取得($00=OK)
-0587	D3B9	4D		      	TSTA  			
-0588	D3BA	26 34		      	BNE   	ERRJ6          	;ERRORになるはずはないが念のため
-0589	D3BC	7E D051		      	JMP   	FN0            	
-0590				
-0591	D3BF	DF EA		DL5   	STX   	XSAVE2         	
-0592	D3C1	CE D634		      	LDX   	#MSGKEY        	;SEL:0-9 NXT:ANY BCK:B BRK:RET
-0593	D3C4	BD D402		      	JSR   	STRPRN         	;文字列表示
-0594	D3C7	DE EA		      	LDX   	XSAVE2         	
-0595	D3C9	BD D45E		DL6   	JSR   	KSCN2          	;キーボートスキャン
-0596	D3CC	4D		      	TSTA  			
-0597	D3CD	27 FA		      	BEQ   	DL6            	;何か入力されるまでループ
-0598	D3CF	36		      	PSHA  			
-0599	D3D0	BD F018		      	JSR   	BEEP           	
-0600	D3D3	32		      	PULA  			
-0601	D3D4	81 0D		      	CMPA  	#$0D           	
-0602	D3D6	27 0F		      	BEQ   	DL7            	;RETURNで打ち切り
-0603	D3D8	81 30		      	CMPA  	#$30           	;数字0～9ならそのままArduinoへ送信してSETL処理へ
-0604	D3DA	25 04		      	BCS   	DL61           	
-0605	D3DC	81 3A		      	CMPA  	#$3A           	
-0606	D3DE	25 09		      	BCS   	DL8            	
-0607	D3E0	81 42		DL61  	CMPA  	#$42           	
-0608	D3E2	27 05		      	BEQ   	DL8            	;「B」で前ページ
-0609	D3E4	4F		      	CLRA  			
-0610	D3E5	20 02		      	BRA   	DL8            	;それ以外で継続
-0611	D3E7	86 FF		DL7   	LDAA  	#$FF           	
-0612	D3E9	BD D678		DL8   	JSR   	SNDBYTE        	
-0613	D3EC	7E D363		      	JMP   	DL2            	
-0614				
-0615	D3EF	39		SDIR99	RTS   			
-0616	D3F0	7E D179		ERRJ6 	JMP   	ERR            	
-0617				
-0618				;--------------- MEXECUTE 機械語読み込みアドレスを実行アドレスとしてジャンプ -------
-0619	D3F3	DE F2		MEXEC 	LDX   	ADRS2          	
-0620	D3F5	6E 00		      	JMP   	X              	
-0621				
-0622				;--------------- Aレジスタのアルファベット小文字を大文字に変換 ----------------
-0623	D3F7	81 61		AZLCNV	CMPA  	#$61           	;a～zなら$20を引いてA～Zに変換
-0624	D3F9	25 06		      	BCS   	AZ1            	
-0625	D3FB	81 7B		      	CMPA  	#$7B           	
-0626	D3FD	24 02		      	BCC   	AZ1            	
-0627	D3FF	80 20		      	SUBA  	#$20           	
-0628	D401	39		AZ1   	RTS   			
+0423	D2E7	DF E8		      	STX   	XSAVE          	;コマンド文字列終了位置を保存
+0424	D2E9	C6 20		      	LDAB  	#$20           	;(X)からのファイル名32Byteを送信
+0425	D2EB	A6 00		BSV1  	LDAA  	X              	
+0426	D2ED	08		      	INX   			
+0427	D2EE	81 22		      	CMPA  	#'"'           	;ダブルコーテーションは除去
+0428	D2F0	27 F9		      	BEQ   	BSV1           	
+0429	D2F2	81 3A		      	CMPA  	#':'           	;コロンなら$00にして送信
+0430	D2F4	26 01		      	BNE   	BSV10          	
+0431	D2F6	4F		      	CLRA  			
+0432	D2F7	BD D7CE		BSV10 	JSR   	SNDBYTE        	
+0433	D2FA	5A		      	DECB  			
+0434	D2FB	26 EE		      	BNE   	BSV1           	
+0435	D2FD	4F		      	CLRA  			
+0436	D2FE	BD D7CE		      	JSR   	SNDBYTE        	;$00送信
+0437				
+0438	D301	BD D7BA		      	JSR   	RCVBYTE        	;状態取得($00=OK)
+0439	D304	4D		      	TSTA  			
+0440	D305	26 02		      	BNE   	ERRJ2          	;$00以外ならエラー
+0441	D307	20 03		      	BRA   	BSV2           	
+0442				
+0443	D309	7E D2AA		ERRJ2 	JMP   	ERR            	
+0444				
+0445	D30C	4F		BSV2  	CLRA  			
+0446	D30D	BD D7CE		      	JSR   	SNDBYTE        	;継続コード$00を送信
+0447	D310	8D 36		      	BSR   	FNSEND         	;ファイルネームをPROG形式用に送信
+0448				
+0449	D312	96 05		      	LDAA  	BSTA+1         	;BASICスタートアドレス下位バイトを送信
+0450	D314	BD D7CE		      	JSR   	SNDBYTE        	
+0451	D317	96 04		      	LDAA  	BSTA           	;BASICスタートアドレス上位バイトを送信
+0452	D319	BD D7CE		      	JSR   	SNDBYTE        	
+0453				
+0454	D31C	DE 04		      	LDX   	BSTA           	
+0455	D31E	DF E4		      	STX   	ADRS           	;BASICスタートアドレスを(ADRS)にコピー
+0456	D320	96 07		      	LDAA  	BEND+1         	
+0457	D322	90 05		      	SUBA  	BSTA+1         	
+0458	D324	97 E7		      	STAA  	LENG+1         	
+0459	D326	96 06		      	LDAA  	BEND           	
+0460	D328	92 04		      	SBCA  	BSTA           	
+0461	D32A	97 E6		      	STAA  	LENG           	;BASICエンドアドレス-BASICスタートアドレスを計算して(LENG)に格納
+0462	D32C	DE E6		      	LDX   	LENG           	
+0463	D32E	08		      	INX   			;BEND - BSTART +1
+0464	D32F	DF E6		      	STX   	LENG           	
+0465				
+0466	D331	96 E7		      	LDAA  	LENG+1         	;ファイルサイズ下位バイトを送信
+0467	D333	BD D7CE		      	JSR   	SNDBYTE        	
+0468	D336	96 E6		      	LDAA  	LENG           	;ファイルサイズ上位バイトを送信
+0469	D338	BD D7CE		      	JSR   	SNDBYTE        	
+0470				
+0471	D33B	4F		      	CLRA  			;BASICプログラムであること(0)を送信
+0472	D33C	BD D7CE		      	JSR   	SNDBYTE        	
+0473				
+0474	D33F	CE D70E		      	LDX   	#SVMSG         	;SAVE表示
+0475	D342	BD D53C		      	JSR   	STRPRN         	
+0476				
+0477	D345	8D 45		      	BSR   	BDSEND         	;BASICプログラムを送信
+0478	D347	39		      	RTS   			
+0479				
+0480				;------------------- ファイルネームをPROG形式用に送信 ----------------------
+0481	D348	DE E8		FNSEND	LDX   	XSAVE          	;コマンド文字列終了位置を復帰
+0482	D34A	5F		      	CLRB  			
+0483	D34B	A6 00		FNS3  	LDAA  	X              	;ファイルネーム文字数をカウント
+0484	D34D	08		      	INX   			
+0485	D34E	81 22		      	CMPA  	#'"'           	;ダブルコーテーションは飛ばす
+0486	D350	27 F9		      	BEQ   	FNS3           	
+0487	D352	5C		      	INCB  			
+0488	D353	81 3A		      	CMPA  	#':'           	;コロンが見つかったら終了
+0489	D355	27 0D		      	BEQ   	FNS4           	
+0490	D357	81 2C		      	CMPA  	#','           	;コンマが見つかったら終了
+0491	D359	27 09		      	BEQ   	FNS4           	
+0492	D35B	4D		      	TSTA  			;$00が見つかったら終了
+0493	D35C	27 06		      	BEQ   	FNS4           	
+0494	D35E	C1 11		      	CMPB  	#$11           	;ファイルネームが16文字以上だったら終了
+0495	D360	27 02		      	BEQ   	FNS4           	
+0496	D362	20 E7		      	BRA   	FNS3           	
+0497	D364	5A		FNS4  	DECB  			
+0498	D365	17		      	TBA   			
+0499				
+0500	D366	BD D7CE		      	JSR   	SNDBYTE        	;FNAME_SIZE 1stByte
+0501	D369	DE E8		      	LDX   	XSAVE          	
+0502	D36B	A6 00		FNS5  	LDAA  	X              	;ファイルネーム文字数分のファイルネームを送信
+0503	D36D	08		      	INX   			
+0504	D36E	81 22		      	CMPA  	#'"'           	;ダブルコーテーションは飛ばす
+0505	D370	27 F9		      	BEQ   	FNS5           	
+0506	D372	BD D7CE		      	JSR   	SNDBYTE        	;ファイルネーム文字数分を送信
+0507	D375	5A		      	DECB  			
+0508	D376	26 F3		      	BNE   	FNS5           	
+0509				
+0510	D378	A6 00		FNS6  	LDAA  	X              	;ファイルネームが16文字以上だった場合、コンマ、コロン又は$00が見つかるまでコマンド文字列終了位置を修正
+0511	D37A	08		      	INX   			
+0512	D37B	81 3A		      	CMPA  	#':'           	
+0513	D37D	27 09		      	BEQ   	FNS7           	
+0514	D37F	81 2C		      	CMPA  	#','           	
+0515	D381	27 05		      	BEQ   	FNS7           	
+0516	D383	4D		      	TSTA  			
+0517	D384	27 02		      	BEQ   	FNS7           	
+0518	D386	20 F0		      	BRA   	FNS6           	
+0519	D388	09		FNS7  	DEX   			
+0520	D389	DF E8		      	STX   	XSAVE          	
+0521	D38B	39		      	RTS   			
+0522				
+0523				;----------- (ADRS)から(LENG)バイトを送信 -----------------------
+0524	D38C	DE E4		BDSEND	LDX   	ADRS           	;ファイルサイズ分を送信
+0525	D38E	A6 00		      	LDAA  	X              	;A <- (ADRS)
+0526	D390	BD D7CE		      	JSR   	SNDBYTE        	;1Byte送信
+0527	D393	08		      	INX   			;X <- X+1
+0528	D394	DF E4		      	STX   	ADRS           	;(ADRS) <- (ADRS)+1
+0529				
+0530	D396	DE E6		      	LDX   	LENG           	;X <- (LENG)
+0531	D398	09		      	DEX   			;X <- X-1
+0532	D399	DF E6		      	STX   	LENG           	;(LENG) <- (LENG)-1
+0533	D39B	26 EF		      	BNE   	BDSEND         	;(LENG)が0になるまでループ
+0534	D39D	39		      	RTS   			
+0535				
+0536				;------------------ 機械語プログラムをSAVE ------------------------
+0537	D39E			MSAVE 				
+0538	D39E	86 81		      	LDAA  	#$81           	;コマンド$81を送信
+0539	D3A0	BD D7CE		      	JSR   	SNDBYTE        	;Aレジスタのコマンドコードを送信
+0540	D3A3	BD D7BA		      	JSR   	RCVBYTE        	;状態取得($00=OK)
+0541	D3A6	4D		      	TSTA  			
+0542	D3A7	26 28		      	BNE   	ERRJ3          	
+0543				
+0544	D3A9	DF E8		      	STX   	XSAVE          	;コマンド文字列終了位置を保存
+0545	D3AB	C6 20		      	LDAB  	#$20           	;(X)からのファイル名32Byteを送信
+0546	D3AD	A6 00		MSV1  	LDAA  	X              	
+0547	D3AF	08		      	INX   			
+0548	D3B0	81 22		      	CMPA  	#'"'           	;ダブルコーテーションは除去
+0549	D3B2	27 F9		      	BEQ   	MSV1           	
+0550	D3B4	81 3A		      	CMPA  	#':'           	;コロンなら$00にして送信
+0551	D3B6	27 06		      	BEQ   	MSV2           	
+0552	D3B8	81 2C		      	CMPA  	#','           	;コンマなら$00にして送信
+0553	D3BA	27 02		      	BEQ   	MSV2           	
+0554	D3BC	20 01		      	BRA   	MSV10          	
+0555	D3BE	4F		MSV2  	CLRA  			
+0556	D3BF	BD D7CE		MSV10 	JSR   	SNDBYTE        	
+0557	D3C2	5A		      	DECB  			
+0558	D3C3	26 E8		      	BNE   	MSV1           	
+0559	D3C5	4F		      	CLRA  			
+0560	D3C6	BD D7CE		      	JSR   	SNDBYTE        	;$00送信
+0561				
+0562	D3C9	BD D7BA		      	JSR   	RCVBYTE        	;状態取得($00=OK)
+0563	D3CC	4D		      	TSTA  			
+0564	D3CD	26 02		      	BNE   	ERRJ3          	;$00以外ならエラー
+0565	D3CF	20 03		      	BRA   	MSV3           	
+0566				
+0567	D3D1	7E D2AA		ERRJ3 	JMP   	ERR            	
+0568				
+0569	D3D4	DE E8		MSV3  	LDX   	XSAVE          	;コマンド文字列終了位置を復帰
+0570	D3D6	A6 00		MSV4  	LDAA  	X              	;ファイルネーム部分を読み飛ばし
+0571	D3D8	08		      	INX   			
+0572	D3D9	81 3A		      	CMPA  	#':'           	;コロンが見つかったら終了
+0573	D3DB	27 09		      	BEQ   	MSV5           	
+0574	D3DD	81 2C		      	CMPA  	#','           	;コンマが見つかったら終了
+0575	D3DF	27 05		      	BEQ   	MSV5           	
+0576	D3E1	4D		      	TSTA  			;$00が見つかったら終了
+0577	D3E2	27 02		      	BEQ   	MSV5           	
+0578	D3E4	20 F0		      	BRA   	MSV4           	
+0579	D3E6	A6 00		MSV5  	LDAA  	X              	
+0580	D3E8	81 24		      	CMPA  	#'$'           	;'$'は読み飛ばす
+0581	D3EA	26 01		      	BNE   	MSV6           	
+0582	D3EC	08		      	INX   			
+0583	D3ED	BD D566		MSV6  	JSR   	SHEX2          	;16進数2桁のアスキーコードを16進数に変換
+0584	D3F0	25 64		      	BCS   	ERRJ4          	;16進数2桁を表すアスキーコードで無ければエラー
+0585	D3F2	97 E4		      	STAA  	ADRS           	;開始アドレス上位バイトにセット
+0586	D3F4	BD D566		      	JSR   	SHEX2          	;16進数2桁のアスキーコードを16進数に変換
+0587	D3F7	25 5D		      	BCS   	ERRJ4          	;16進数2桁を表すアスキーコードで無ければエラー
+0588	D3F9	97 E5		      	STAA  	ADRS+1         	;開始アドレス下位バイトにセット
+0589	D3FB	A6 00		      	LDAA  	X              	
+0590	D3FD	81 2C		      	CMPA  	#','           	;コンマは読み飛ばす
+0591	D3FF	26 01		      	BNE   	MSV8           	
+0592	D401	08		      	INX   			
+0593	D402	A6 00		MSV8  	LDAA  	X              	
+0594	D404	81 24		      	CMPA  	#'$'           	;'$'は読み飛ばす
+0595	D406	26 01		      	BNE   	MSV9           	
+0596	D408	08		      	INX   			
+0597	D409	BD D566		MSV9  	JSR   	SHEX2          	;16進数2桁のアスキーコードを16進数に変換
+0598	D40C	25 48		      	BCS   	ERRJ4          	;16進数2桁を表すアスキーコードで無ければエラー
+0599	D40E	97 E6		      	STAA  	LENG           	;終了アドレス上位バイトにセット
+0600	D410	BD D566		      	JSR   	SHEX2          	;16進数2桁のアスキーコードを16進数に変換
+0601	D413	25 41		      	BCS   	ERRJ4          	;16進数2桁を表すアスキーコードで無ければエラー
+0602	D415	97 E7		      	STAA  	LENG+1         	;終了アドレス下位バイトにセット
+0603	D417	DF EA		      	STX   	XSAVE2         	;コマンド文字列終了位置を保存
+0604				
+0605	D419	96 E7		      	LDAA  	LENG+1         	
+0606	D41B	90 E5		      	SUBA  	ADRS+1         	
+0607	D41D	97 E7		      	STAA  	LENG+1         	
+0608	D41F	96 E6		      	LDAA  	LENG           	
+0609	D421	92 E4		      	SBCA  	ADRS           	
+0610	D423	25 31		      	BCS   	ERRJ4          	
+0611	D425	97 E6		      	STAA  	LENG           	;終了アドレス-開始アドレスを計算して(LENG)に格納
+0612	D427	DE E6		      	LDX   	LENG           	
+0613	D429	08		      	INX   			;LENG - ADRS +1
+0614	D42A	DF E6		      	STX   	LENG           	
+0615				
+0616	D42C	4F		      	CLRA  			
+0617	D42D	BD D7CE		      	JSR   	SNDBYTE        	;継続コード$00を送信
+0618	D430	BD D348		      	JSR   	FNSEND         	;ファイルネームをPROG形式用に送信
+0619				
+0620	D433	96 E5		      	LDAA  	ADRS+1         	;BASICスタートアドレス下位バイトを送信
+0621	D435	BD D7CE		      	JSR   	SNDBYTE        	
+0622	D438	96 E4		      	LDAA  	ADRS           	;BASICスタートアドレス上位バイトを送信
+0623	D43A	BD D7CE		      	JSR   	SNDBYTE        	
+0624				
+0625	D43D	96 E7		      	LDAA  	LENG+1         	;ファイルサイズ下位バイトを送信
+0626	D43F	BD D7CE		      	JSR   	SNDBYTE        	
+0627	D442	96 E6		      	LDAA  	LENG           	;ファイルサイズ上位バイトを送信
+0628	D444	BD D7CE		      	JSR   	SNDBYTE        	
 0629				
-0630				;--------------- 文字列出力 ----------------------
-0631				;(X)から$00までの文字列を表示
-0632	D402			STRPRN				
-0633	D402	A6 00		      	LDAA  	X              	;A <- (X)
-0634	D404	81 00		      	CMPA  	#$00           	;$00なら終了
-0635	D406	27 06		      	BEQ   	SP1            	
-0636	D408	BD F3BC		      	JSR   	PRINT          	;1文字出力
-0637	D40B	08		      	INX   			
-0638	D40C	20 F4		      	BRA   	STRPRN         	
-0639	D40E	39		SP1   	RTS   			
-0640				
-0641				;------------------- Aレジスタの内容を16進数文字列として表示 -------------------------
-0642	D40F	36		PRHEX 	PSHA  			
-0643	D410	84 F0		      	ANDA  	#$F0           	;上位4ビットを変換
-0644	D412	44		      	LSRA  			
-0645	D413	44		      	LSRA  			
-0646	D414	44		      	LSRA  			
-0647	D415	44		      	LSRA  			
-0648	D416	8D 06		      	BSR   	PRHX1          	
-0649	D418	32		      	PULA  			
-0650	D419	84 0F		      	ANDA  	#$0F           	;下位4ビットを変換
-0651	D41B	8D 01		      	BSR   	PRHX1          	
-0652	D41D	39		      	RTS   			
-0653				
-0654	D41E	81 0A		PRHX1 	CMPA  	#$0A           	
-0655	D420	25 04		      	BCS   	PH2            	
-0656	D422	8B 37		      	ADDA  	#$37           	;A～F
-0657	D424	20 02		      	BRA   	PH3            	
-0658	D426	8B 30		PH2   	ADDA  	#$30           	;0～9
-0659	D428	BD F3BC		PH3   	JSR   	PRINT          	
-0660	D42B	39		      	RTS   			
-0661				
-0662				
-0663				;----- (X),(X+1)の2バイトアスキーコード文字列を16進数にしてAレジスタへ -----------------
-0664				;                          '0'～'9','A'～'F'以外が含まれていたらA=0 C=1
-0665	D42C	A6 00		SHEX2 	LDAA  	X              	
-0666	D42E	8D 11		      	BSR   	SHEX           	
-0667	D430	25 0E		      	BCS   	SH21           	;ERRORなら中断
-0668	D432	16		      	TAB   			
-0669	D433	58		      	ASLB  			
-0670	D434	58		      	ASLB  			
-0671	D435	58		      	ASLB  			
-0672	D436	58		      	ASLB  			;Bレジスタに送って16倍
-0673	D437	08		      	INX   			
-0674	D438	A6 00		      	LDAA  	X              	
-0675	D43A	8D 05		      	BSR   	SHEX           	
-0676	D43C	25 02		      	BCS   	SH21           	;ERRORなら中断
-0677	D43E	1B		      	ABA   			;Bレジスタを加算
-0678	D43F	08		      	INX   			
-0679	D440	39		SH21  	RTS   			
-0680				
-0681				;----------------- Aレジスタのアスキーコードを16進数にしてAレジスタへ  --------------------
-0682				;                          '0'～'9','A'～'F'以外ならA=0 C=1
-0683	D441	81 30		SHEX  	CMPA  	#'0'           	
-0684	D443	25 12		      	BCS   	SH2            	
-0685	D445	81 3A		      	CMPA  	#':'           	
-0686	D447	25 0A		      	BCS   	SH1            	
-0687	D449	81 41		      	CMPA  	#'A'           	
-0688	D44B	25 0A		      	BCS   	SH2            	
-0689	D44D	81 47		      	CMPA  	#'G'           	
-0690	D44F	25 0A		      	BCS   	SH3            	
-0691	D451	20 04		      	BRA   	SH2            	
-0692				
-0693	D453	80 30		SH1   	SUBA  	#$30           	;0～9
-0694	D455	20 06		      	BRA   	SH4            	
-0695	D457	4F		SH2   	CLRA  			;ERROR
-0696	D458	0D		      	SEC   			
-0697	D459	20 02		      	BRA   	SH4            	
-0698	D45B	80 37		SH3   	SUBA  	#$37           	;A～F
-0699	D45D	39		SH4   	RTS   			
-0700				
-0701				;--------- キー入力(エコーバックなし) A=キーデータ(何も押されていなければ$00) Bレジスタ破壊 CTRLキー未対応 --------
-0702	D45E	DF EE		KSCN2 	STX   	XSAVEK         	
-0703	D460	CE C800		      	LDX   	#KEYDAT        	
-0704	D463	5F		      	CLRB  			
-0705	D464	17		KSC0  	TBA   			
-0706	D465	A7 01		      	STAA  	1,X            	;KEYSEL($C801)に出力
-0707	D467	A6 00		      	LDAA  	X              	;KEYDAT($C800)のデータを取得
-0708	D469	84 1F		      	ANDA  	#$1F           	
-0709	D46B	81 1F		      	CMPA  	#$1F           	;何か押されている？
-0710	D46D	26 08		      	BNE   	KSC1           	
-0711	D46F	5C		      	INCB  			;押されていなければ次のスキャン
-0712	D470	C1 09		      	CMPB  	#$09           	;$00～$08まで検査
-0713	D472	26 F0		      	BNE   	KSC0           	
-0714	D474	4F		      	CLRA  			;何も押されていなければ$00でリターン
-0715	D475	20 3C		      	BRA   	KSC15          	
-0716				
-0717	D477	36		KSC1  	PSHA  			;何か押されていた時の処理
-0718	D478	58		      	ASLB  			;B <- B*8
-0719	D479	58		      	ASLB  			
-0720	D47A	58		      	ASLB  			
-0721	D47B	CE D508		      	LDX   	#KTBL          	
-0722	D47E	DF EC		      	STX   	ADRSK          	;(ADRSK) <- KTBL
-0723	D480	96 ED		      	LDAA  	ADRSK+1        	
-0724	D482	1B		      	ABA   			
-0725	D483	97 ED		      	STAA  	ADRSK+1        	
-0726	D485	96 EC		      	LDAA  	ADRSK          	
-0727	D487	89 00		      	ADCA  	#$00           	
-0728	D489	97 EC		      	STAA  	ADRSK          	;(ADRSK) <- (ADRSK) + B
-0729	D48B	32		      	PULA  			
-0730	D48C	DE EC		      	LDX   	ADRSK          	
-0731	D48E	47		      	ASRA  			
-0732	D48F	24 0C		      	BCC   	KSC2           	
-0733	D491	47		      	ASRA  			
-0734	D492	24 0D		      	BCC   	KSC3           	
-0735	D494	47		      	ASRA  			
-0736	D495	24 12		      	BCC   	KSC4           	
-0737	D497	47		      	ASRA  			
-0738	D498	24 13		      	BCC   	KSC5           	
-0739	D49A	47		      	ASRA  			
-0740	D49B	24 14		      	BCC   	KSC6           	
-0741	D49D	A6 00		KSC2  	LDAA  	X              	;D0列を取得
-0742	D49F	20 12		      	BRA   	KSC15          	
-0743	D4A1	A6 01		KSC3  	LDAA  	1,X            	;D1列を取得
-0744	D4A3	81 FF		      	CMPA  	#$FF           	;SHIFTキーが押されていたらもう一度スキャン
-0745	D4A5	27 0F		      	BEQ   	KSC7           	
-0746	D4A7	20 0A		      	BRA   	KSC15          	
-0747	D4A9	A6 02		KSC4  	LDAA  	2,X            	;D2列を取得
-0748	D4AB	20 06		      	BRA   	KSC15          	
-0749	D4AD	A6 03		KSC5  	LDAA  	3,X            	;D3列を取得
-0750	D4AF	20 02		      	BRA   	KSC15          	
-0751	D4B1	A6 04		KSC6  	LDAA  	4,X            	;D4列を取得
-0752				
-0753	D4B3	DE EE		KSC15 	LDX   	XSAVEK         	
-0754	D4B5	39		      	RTS   			
-0755				
-0756	D4B6	CE C800		KSC7  	LDX   	#KEYDAT        	;SHIFTキーが押されていた時のスキャン
-0757	D4B9	C6 01		      	LDAB  	#$01           	
-0758	D4BB	17		KSC8  	TBA   			
-0759	D4BC	A7 01		      	STAA  	1,X            	;KEYSEL($C801)に出力
-0760	D4BE	A6 00		      	LDAA  	X              	;KEYDAT($C800)のデータを取得
-0761	D4C0	84 1F		      	ANDA  	#$1F           	
-0762	D4C2	81 1F		      	CMPA  	#$1F           	;何か押されている？
-0763	D4C4	26 08		      	BNE   	KSC9           	
-0764	D4C6	5C		      	INCB  			;押されていなければ次のスキャン
-0765	D4C7	C1 09		      	CMPB  	#$09           	;$00～$08まで検査
-0766	D4C9	26 F0		      	BNE   	KSC8           	
-0767	D4CB	4F		      	CLRA  			;SHIFTキー以外押されていなければ$00でリターン
-0768	D4CC	20 E5		      	BRA   	KSC15          	
-0769	D4CE	36		KSC9  	PSHA  			;SHIFTキー以外押されていた時の処理
-0770	D4CF	58		      	ASLB  			;B <- B*8
-0771	D4D0	58		      	ASLB  			
-0772	D4D1	58		      	ASLB  			
-0773	D4D2	CE D550		      	LDX   	#KTBL2         	
-0774	D4D5	DF EC		      	STX   	ADRSK          	;(ADRSK) <- KTBL2
-0775	D4D7	96 ED		      	LDAA  	ADRSK+1        	
-0776	D4D9	1B		      	ABA   			
-0777	D4DA	97 ED		      	STAA  	ADRSK+1        	
-0778	D4DC	96 EC		      	LDAA  	ADRSK          	
-0779	D4DE	89 00		      	ADCA  	#$00           	
-0780	D4E0	97 EC		      	STAA  	ADRSK          	;(ADRSK) <- (ADRSK) + B
-0781	D4E2	32		      	PULA  			
-0782	D4E3	DE EC		      	LDX   	ADRSK          	
-0783	D4E5	47		      	ASRA  			
-0784	D4E6	24 0C		      	BCC   	KSC10          	
-0785	D4E8	47		      	ASRA  			
-0786	D4E9	24 0D		      	BCC   	KSC11          	
-0787	D4EB	47		      	ASRA  			
-0788	D4EC	24 0E		      	BCC   	KSC12          	
-0789	D4EE	47		      	ASRA  			
-0790	D4EF	24 0F		      	BCC   	KSC13          	
-0791	D4F1	47		      	ASRA  			
-0792	D4F2	24 10		      	BCC   	KSC14          	
-0793	D4F4	A6 00		KSC10 	LDAA  	X              	;D1列を取得
-0794	D4F6	20 BB		      	BRA   	KSC15          	
-0795	D4F8	A6 01		KSC11 	LDAA  	1,X            	;D1列を取得
-0796	D4FA	20 B7		      	BRA   	KSC15          	
-0797	D4FC	A6 02		KSC12 	LDAA  	2,X            	;D2列を取得
-0798	D4FE	20 B3		      	BRA   	KSC15          	
-0799	D500	A6 03		KSC13 	LDAA  	3,X            	;D3列を取得
-0800	D502	20 AF		      	BRA   	KSC15          	
-0801	D504	A6 04		KSC14 	LDAA  	4,X            	;D4列を取得
-0802	D506	20 AB		      	BRA   	KSC15          	
-0803				
-0804				;--------------- KEY TABLE -------------------------
-0805	D508	00 FF 5A 58 	KTBL  	FCB   	$00,$FF,'Z','X','C',$00,$00,$00	
+0630	D447	86 01		      	LDAA  	#$01           	;機械語プログラムであること(1)を送信
+0631	D449	BD D7CE		      	JSR   	SNDBYTE        	
+0632				
+0633	D44C	CE D70E		      	LDX   	#SVMSG         	;SAVE表示
+0634	D44F	BD D53C		      	JSR   	STRPRN         	
+0635				
+0636	D452	BD D38C		      	JSR   	BDSEND         	;機械語データを送信
+0637	D455	39		      	RTS   			
+0638				
+0639	D456			ERRJ4 				
+0640	D456	86 FF		      	LDAA  	#$FF           	;打ち切りコードを送信
+0641	D458	BD D7CE		      	JSR   	SNDBYTE        	
+0642	D45B	CE D77A		      	LDX   	#MSG_AD        	;アドレスエラー表示
+0643	D45E	BD D53C		      	JSR   	STRPRN         	
+0644	D461	DE E8		      	LDX   	XSAVE          	
+0645	D463	39		      	RTS   			
+0646				
+0647				;------------------ SDファイル一覧表示 ---------------------------
+0648	D464	7E D2AA		ERRJ5 	JMP   	ERR            	;ERROR処理へジャンプ
+0649				
+0650	D467			FILES 				
+0651				*「SDIR」処理
+0652	D467			SDIR_PRG				
+0653	D467	86 82		      	LDAA  	#$82           	;コマンド$82を送信
+0654	D469	BD D7CE		      	JSR   	SNDBYTE        	;Aレジスタのコマンドコードを送信
+0655	D46C	BD D7BA		      	JSR   	RCVBYTE        	;状態取得(00H=OK)
+0656	D46F	4D		      	TSTA  			
+0657	D470	26 F2		      	BNE   	ERRJ5          	;ERROR
+0658				
+0659	D472	DF E8		      	STX   	XSAVE          	;コマンド文字列終了位置を保存
+0660	D474	C6 20		      	LDAB  	#$20           	;(X)からのファイル名32Byteを送信
+0661	D476	A6 00		SDR1  	LDAA  	X              	
+0662	D478	08		      	INX   			
+0663	D479	81 22		      	CMPA  	#'"'           	;ダブルコーテーションは除去
+0664	D47B	27 F9		      	BEQ   	SDR1           	
+0665	D47D	81 3A		      	CMPA  	#':'           	;コロンなら$00にして送信
+0666	D47F	27 06		      	BEQ   	SDR2           	
+0667	D481	81 2C		      	CMPA  	#','           	;コンマなら$00にして送信
+0668	D483	27 02		      	BEQ   	SDR2           	
+0669	D485	20 01		      	BRA   	SDR10          	
+0670	D487	4F		SDR2  	CLRA  			
+0671	D488	BD D7CE		SDR10 	JSR   	SNDBYTE        	;1文字送信
+0672	D48B	5A		      	DECB  			
+0673	D48C	26 E8		      	BNE   	SDR1           	
+0674	D48E	4F		      	CLRA  			
+0675	D48F	BD D7CE		      	JSR   	SNDBYTE        	;$00送信
+0676	D492	DF E8		      	STX   	XSAVE          	;コマンド文字列終了位置を保存
+0677				
+0678	D494	BD D7BA		      	JSR   	RCVBYTE        	;状態取得($00=OK)
+0679	D497	4D		      	TSTA  			
+0680	D498	26 CA		      	BNE   	ERRJ5          	;$00以外ならエラー
+0681				
+0682	D49A	CE 0030		DL1   	LDX   	#KBUF          	;Arduinoから送られてくる文字列を#KBUFへ格納
+0683	D49D	BD D7BA		DL2   	JSR   	RCVBYTE        	
+0684	D4A0	BD D531		      	JSR   	AZLCNV         	;大文字に変換
+0685	D4A3	4D		      	TSTA  			
+0686	D4A4	27 11		      	BEQ   	DL3            	;$00を受信するまでを一行とする
+0687	D4A6	81 FF		      	CMPA  	#$FF           	
+0688	D4A8	27 23		      	BEQ   	DL4            	;$FFを受信したら終了
+0689	D4AA	81 FD		      	CMPA  	#$FD           	
+0690	D4AC	27 25		      	BEQ   	DL9            	;$FD受信で文字列を取得してSETLしたことを表示
+0691	D4AE	81 FE		      	CMPA  	#$FE           	
+0692	D4B0	27 47		      	BEQ   	DL5            	;$FEを受信したら一時停止して一文字入力待ち
+0693	D4B2	A7 00		      	STAA  	X              	
+0694	D4B4	08		      	INX   			
+0695	D4B5	20 E6		      	BRA   	DL2            	
+0696				
+0697	D4B7			DL3   				
+0698	D4B7	86 0D		      	LDAA  	#$0D           	;$00を受信したら一行分を表示して改行
+0699	D4B9	A7 00		      	STAA  	X              	
+0700	D4BB	08		      	INX   			
+0701	D4BC	86 0A		      	LDAA  	#$0A           	
+0702	D4BE	A7 00		      	STAA  	X              	
+0703	D4C0	08		      	INX   			
+0704				
+0705	D4C1	4F		      	CLRA  			
+0706	D4C2	A7 00		      	STAA  	X              	
+0707	D4C4	08		      	INX   			
+0708	D4C5	CE 0030		      	LDX   	#KBUF          	
+0709	D4C8	BD D53C		      	JSR   	STRPRN         	;1行表示
+0710	D4CB	20 CD		DL33  	BRA   	DL1            	
+0711				
+0712	D4CD	BD D7BA		DL4   	JSR   	RCVBYTE        	;状態取得(00H=OK)して終了
+0713	D4D0	DE E8		      	LDX   	XSAVE          	
+0714	D4D2	39		      	RTS   			
+0715				
+0716	D4D3	CE 0030		DL9   	LDX   	#KBUF          	;文字列を取得
+0717	D4D6	BD D7BA		DL91  	JSR   	RCVBYTE        	;#KBUFへ文字列格納
+0718	D4D9	BD D531		      	JSR   	AZLCNV         	;大文字に変換
+0719	D4DC	A7 00		      	STAA  	X              	
+0720	D4DE	08		      	INX   			
+0721	D4DF	4D		      	TSTA  			;$00を受信するまで受信処理
+0722	D4E0	26 F4		      	BNE   	DL91           	
+0723				;		LDX		#KBUF
+0724				;		JSR		STRPRN
+0725	D4E2	BD D7BA		      	JSR   	RCVBYTE        	;$FF終了コード読み飛ばし
+0726	D4E5	BD D7BA		      	JSR   	RCVBYTE        	;状態取得読み飛ばし
+0727	D4E8	CE 0030		      	LDX   	#KBUF          	
+0728	D4EB	86 80		      	LDAA  	#$80           	;コマンド$80を送信、そのままLOADコマンド実行
+0729	D4ED	BD D7CE		      	JSR   	SNDBYTE        	;Aレジスタのコマンドコードを送信
+0730	D4F0	BD D7BA		      	JSR   	RCVBYTE        	;状態取得($00=OK)
+0731	D4F3	4D		      	TSTA  			
+0732	D4F4	26 34		      	BNE   	ERRJ6          	;ERRORになるはずはないが念のため
+0733	D4F6	7E D051		      	JMP   	FN0            	
+0734				
+0735	D4F9	DF EA		DL5   	STX   	XSAVE2         	
+0736	D4FB	CE D78A		      	LDX   	#MSGKEY        	;SEL:0-9 NXT:ANY BCK:B BRK:RET
+0737	D4FE	BD D53C		      	JSR   	STRPRN         	;文字列表示
+0738	D501	DE EA		      	LDX   	XSAVE2         	
+0739	D503	BD D598		DL6   	JSR   	KSCN2          	;キーボートスキャン
+0740	D506	4D		      	TSTA  			
+0741	D507	27 FA		      	BEQ   	DL6            	;何か入力されるまでループ
+0742	D509	36		      	PSHA  			
+0743	D50A	BD F018		      	JSR   	BEEP           	
+0744	D50D	32		      	PULA  			
+0745	D50E	81 0D		      	CMPA  	#$0D           	
+0746	D510	27 0F		      	BEQ   	DL7            	;RETURNで打ち切り
+0747	D512	81 30		      	CMPA  	#$30           	;数字0～9ならそのままArduinoへ送信してSETL処理へ
+0748	D514	25 04		      	BCS   	DL61           	
+0749	D516	81 3A		      	CMPA  	#$3A           	
+0750	D518	25 09		      	BCS   	DL8            	
+0751	D51A	81 42		DL61  	CMPA  	#$42           	
+0752	D51C	27 05		      	BEQ   	DL8            	;「B」で前ページ
+0753	D51E	4F		      	CLRA  			
+0754	D51F	20 02		      	BRA   	DL8            	;それ以外で継続
+0755	D521	86 FF		DL7   	LDAA  	#$FF           	
+0756	D523	BD D7CE		DL8   	JSR   	SNDBYTE        	
+0757	D526	7E D49D		      	JMP   	DL2            	
+0758				
+0759	D529	39		SDIR99	RTS   			
+0760	D52A	7E D2AA		ERRJ6 	JMP   	ERR            	
+0761				
+0762				;--------------- MEXECUTE 機械語読み込みアドレスを実行アドレスとしてジャンプ -------
+0763	D52D	DE F2		MEXEC 	LDX   	ADRS2          	
+0764	D52F	6E 00		      	JMP   	X              	
+0765				
+0766				;--------------- Aレジスタのアルファベット小文字を大文字に変換 ----------------
+0767	D531	81 61		AZLCNV	CMPA  	#$61           	;a～zなら$20を引いてA～Zに変換
+0768	D533	25 06		      	BCS   	AZ1            	
+0769	D535	81 7B		      	CMPA  	#$7B           	
+0770	D537	24 02		      	BCC   	AZ1            	
+0771	D539	80 20		      	SUBA  	#$20           	
+0772	D53B	39		AZ1   	RTS   			
+0773				
+0774				;--------------- 文字列出力 ----------------------
+0775				;(X)から$00までの文字列を表示
+0776	D53C			STRPRN				
+0777	D53C	A6 00		      	LDAA  	X              	;A <- (X)
+0778	D53E	81 00		      	CMPA  	#$00           	;$00なら終了
+0779	D540	27 06		      	BEQ   	SP1            	
+0780	D542	BD F3BC		      	JSR   	PRINT          	;1文字出力
+0781	D545	08		      	INX   			
+0782	D546	20 F4		      	BRA   	STRPRN         	
+0783	D548	39		SP1   	RTS   			
+0784				
+0785				;------------------- Aレジスタの内容を16進数文字列として表示 -------------------------
+0786	D549	36		PRHEX 	PSHA  			
+0787	D54A	84 F0		      	ANDA  	#$F0           	;上位4ビットを変換
+0788	D54C	44		      	LSRA  			
+0789	D54D	44		      	LSRA  			
+0790	D54E	44		      	LSRA  			
+0791	D54F	44		      	LSRA  			
+0792	D550	8D 06		      	BSR   	PRHX1          	
+0793	D552	32		      	PULA  			
+0794	D553	84 0F		      	ANDA  	#$0F           	;下位4ビットを変換
+0795	D555	8D 01		      	BSR   	PRHX1          	
+0796	D557	39		      	RTS   			
+0797				
+0798	D558	81 0A		PRHX1 	CMPA  	#$0A           	
+0799	D55A	25 04		      	BCS   	PH2            	
+0800	D55C	8B 37		      	ADDA  	#$37           	;A～F
+0801	D55E	20 02		      	BRA   	PH3            	
+0802	D560	8B 30		PH2   	ADDA  	#$30           	;0～9
+0803	D562	BD F3BC		PH3   	JSR   	PRINT          	
+0804	D565	39		      	RTS   			
+0805				
+0806				
+0807				;----- (X),(X+1)の2バイトアスキーコード文字列を16進数にしてAレジスタへ -----------------
+0808				;                          '0'～'9','A'～'F'以外が含まれていたらA=0 C=1
+0809	D566	A6 00		SHEX2 	LDAA  	X              	
+0810	D568	8D 11		      	BSR   	SHEX           	
+0811	D56A	25 0E		      	BCS   	SH21           	;ERRORなら中断
+0812	D56C	16		      	TAB   			
+0813	D56D	58		      	ASLB  			
+0814	D56E	58		      	ASLB  			
+0815	D56F	58		      	ASLB  			
+0816	D570	58		      	ASLB  			;Bレジスタに送って16倍
+0817	D571	08		      	INX   			
+0818	D572	A6 00		      	LDAA  	X              	
+0819	D574	8D 05		      	BSR   	SHEX           	
+0820	D576	25 02		      	BCS   	SH21           	;ERRORなら中断
+0821	D578	1B		      	ABA   			;Bレジスタを加算
+0822	D579	08		      	INX   			
+0823	D57A	39		SH21  	RTS   			
+0824				
+0825				;----------------- Aレジスタのアスキーコードを16進数にしてAレジスタへ  --------------------
+0826				;                          '0'～'9','A'～'F'以外ならA=0 C=1
+0827	D57B	81 30		SHEX  	CMPA  	#'0'           	
+0828	D57D	25 12		      	BCS   	SH2            	
+0829	D57F	81 3A		      	CMPA  	#':'           	
+0830	D581	25 0A		      	BCS   	SH1            	
+0831	D583	81 41		      	CMPA  	#'A'           	
+0832	D585	25 0A		      	BCS   	SH2            	
+0833	D587	81 47		      	CMPA  	#'G'           	
+0834	D589	25 0A		      	BCS   	SH3            	
+0835	D58B	20 04		      	BRA   	SH2            	
+0836				
+0837	D58D	80 30		SH1   	SUBA  	#$30           	;0～9
+0838	D58F	20 06		      	BRA   	SH4            	
+0839	D591	4F		SH2   	CLRA  			;ERROR
+0840	D592	0D		      	SEC   			
+0841	D593	20 02		      	BRA   	SH4            	
+0842	D595	80 37		SH3   	SUBA  	#$37           	;A～F
+0843	D597	39		SH4   	RTS   			
+0844				
+0845				;--------- キー入力(エコーバックなし) A=キーデータ(何も押されていなければ$00) Bレジスタ破壊 CTRLキー未対応 --------
+0846	D598	DF EE		KSCN2 	STX   	XSAVEK         	
+0847	D59A	CE C800		      	LDX   	#KEYDAT        	
+0848	D59D	5F		      	CLRB  			
+0849	D59E	17		KSC0  	TBA   			
+0850	D59F	A7 01		      	STAA  	1,X            	;KEYSEL($C801)に出力
+0851	D5A1	A6 00		      	LDAA  	X              	;KEYDAT($C800)のデータを取得
+0852	D5A3	84 1F		      	ANDA  	#$1F           	
+0853	D5A5	81 1F		      	CMPA  	#$1F           	;何か押されている？
+0854	D5A7	26 08		      	BNE   	KSC1           	
+0855	D5A9	5C		      	INCB  			;押されていなければ次のスキャン
+0856	D5AA	C1 09		      	CMPB  	#$09           	;$00～$08まで検査
+0857	D5AC	26 F0		      	BNE   	KSC0           	
+0858	D5AE	4F		      	CLRA  			;何も押されていなければ$00でリターン
+0859	D5AF	20 3C		      	BRA   	KSC15          	
+0860				
+0861	D5B1	36		KSC1  	PSHA  			;何か押されていた時の処理
+0862	D5B2	58		      	ASLB  			;B <- B*8
+0863	D5B3	58		      	ASLB  			
+0864	D5B4	58		      	ASLB  			
+0865	D5B5	CE D642		      	LDX   	#KTBL          	
+0866	D5B8	DF EC		      	STX   	ADRSK          	;(ADRSK) <- KTBL
+0867	D5BA	96 ED		      	LDAA  	ADRSK+1        	
+0868	D5BC	1B		      	ABA   			
+0869	D5BD	97 ED		      	STAA  	ADRSK+1        	
+0870	D5BF	96 EC		      	LDAA  	ADRSK          	
+0871	D5C1	89 00		      	ADCA  	#$00           	
+0872	D5C3	97 EC		      	STAA  	ADRSK          	;(ADRSK) <- (ADRSK) + B
+0873	D5C5	32		      	PULA  			
+0874	D5C6	DE EC		      	LDX   	ADRSK          	
+0875	D5C8	47		      	ASRA  			
+0876	D5C9	24 0C		      	BCC   	KSC2           	
+0877	D5CB	47		      	ASRA  			
+0878	D5CC	24 0D		      	BCC   	KSC3           	
+0879	D5CE	47		      	ASRA  			
+0880	D5CF	24 12		      	BCC   	KSC4           	
+0881	D5D1	47		      	ASRA  			
+0882	D5D2	24 13		      	BCC   	KSC5           	
+0883	D5D4	47		      	ASRA  			
+0884	D5D5	24 14		      	BCC   	KSC6           	
+0885	D5D7	A6 00		KSC2  	LDAA  	X              	;D0列を取得
+0886	D5D9	20 12		      	BRA   	KSC15          	
+0887	D5DB	A6 01		KSC3  	LDAA  	1,X            	;D1列を取得
+0888	D5DD	81 FF		      	CMPA  	#$FF           	;SHIFTキーが押されていたらもう一度スキャン
+0889	D5DF	27 0F		      	BEQ   	KSC7           	
+0890	D5E1	20 0A		      	BRA   	KSC15          	
+0891	D5E3	A6 02		KSC4  	LDAA  	2,X            	;D2列を取得
+0892	D5E5	20 06		      	BRA   	KSC15          	
+0893	D5E7	A6 03		KSC5  	LDAA  	3,X            	;D3列を取得
+0894	D5E9	20 02		      	BRA   	KSC15          	
+0895	D5EB	A6 04		KSC6  	LDAA  	4,X            	;D4列を取得
+0896				
+0897	D5ED	DE EE		KSC15 	LDX   	XSAVEK         	
+0898	D5EF	39		      	RTS   			
+0899				
+0900	D5F0	CE C800		KSC7  	LDX   	#KEYDAT        	;SHIFTキーが押されていた時のスキャン
+0901	D5F3	C6 01		      	LDAB  	#$01           	
+0902	D5F5	17		KSC8  	TBA   			
+0903	D5F6	A7 01		      	STAA  	1,X            	;KEYSEL($C801)に出力
+0904	D5F8	A6 00		      	LDAA  	X              	;KEYDAT($C800)のデータを取得
+0905	D5FA	84 1F		      	ANDA  	#$1F           	
+0906	D5FC	81 1F		      	CMPA  	#$1F           	;何か押されている？
+0907	D5FE	26 08		      	BNE   	KSC9           	
+0908	D600	5C		      	INCB  			;押されていなければ次のスキャン
+0909	D601	C1 09		      	CMPB  	#$09           	;$00～$08まで検査
+0910	D603	26 F0		      	BNE   	KSC8           	
+0911	D605	4F		      	CLRA  			;SHIFTキー以外押されていなければ$00でリターン
+0912	D606	20 E5		      	BRA   	KSC15          	
+0913	D608	36		KSC9  	PSHA  			;SHIFTキー以外押されていた時の処理
+0914	D609	58		      	ASLB  			;B <- B*8
+0915	D60A	58		      	ASLB  			
+0916	D60B	58		      	ASLB  			
+0917	D60C	CE D68A		      	LDX   	#KTBL2         	
+0918	D60F	DF EC		      	STX   	ADRSK          	;(ADRSK) <- KTBL2
+0919	D611	96 ED		      	LDAA  	ADRSK+1        	
+0920	D613	1B		      	ABA   			
+0921	D614	97 ED		      	STAA  	ADRSK+1        	
+0922	D616	96 EC		      	LDAA  	ADRSK          	
+0923	D618	89 00		      	ADCA  	#$00           	
+0924	D61A	97 EC		      	STAA  	ADRSK          	;(ADRSK) <- (ADRSK) + B
+0925	D61C	32		      	PULA  			
+0926	D61D	DE EC		      	LDX   	ADRSK          	
+0927	D61F	47		      	ASRA  			
+0928	D620	24 0C		      	BCC   	KSC10          	
+0929	D622	47		      	ASRA  			
+0930	D623	24 0D		      	BCC   	KSC11          	
+0931	D625	47		      	ASRA  			
+0932	D626	24 0E		      	BCC   	KSC12          	
+0933	D628	47		      	ASRA  			
+0934	D629	24 0F		      	BCC   	KSC13          	
+0935	D62B	47		      	ASRA  			
+0936	D62C	24 10		      	BCC   	KSC14          	
+0937	D62E	A6 00		KSC10 	LDAA  	X              	;D1列を取得
+0938	D630	20 BB		      	BRA   	KSC15          	
+0939	D632	A6 01		KSC11 	LDAA  	1,X            	;D1列を取得
+0940	D634	20 B7		      	BRA   	KSC15          	
+0941	D636	A6 02		KSC12 	LDAA  	2,X            	;D2列を取得
+0942	D638	20 B3		      	BRA   	KSC15          	
+0943	D63A	A6 03		KSC13 	LDAA  	3,X            	;D3列を取得
+0944	D63C	20 AF		      	BRA   	KSC15          	
+0945	D63E	A6 04		KSC14 	LDAA  	4,X            	;D4列を取得
+0946	D640	20 AB		      	BRA   	KSC15          	
+0947				
+0948				;--------------- KEY TABLE -------------------------
+0949	D642	00 FF 5A 58 	KTBL  	FCB   	$00,$FF,'Z','X','C',$00,$00,$00	
 		43 00 00 00 
-0806	D510	41 53 44 46 	      	FCB   	'A','S','D','F','G',$00,$00,$00	
+0950	D64A	41 53 44 46 	      	FCB   	'A','S','D','F','G',$00,$00,$00	
 		47 00 00 00 
-0807	D518	51 57 45 52 	      	FCB   	'Q','W','E','R','T',$00,$00,$00	
+0951	D652	51 57 45 52 	      	FCB   	'Q','W','E','R','T',$00,$00,$00	
 		54 00 00 00 
-0808	D520	31 32 33 34 	      	FCB   	'1','2','3','4','5',$00,$00,$00	
+0952	D65A	31 32 33 34 	      	FCB   	'1','2','3','4','5',$00,$00,$00	
 		35 00 00 00 
-0809	D528	36 37 38 39 	      	FCB   	'6','7','8','9','0',$00,$00,$00	
+0953	D662	36 37 38 39 	      	FCB   	'6','7','8','9','0',$00,$00,$00	
 		30 00 00 00 
-0810	D530	59 55 49 4F 	      	FCB   	'Y','U','I','O','P',$00,$00,$00	
+0954	D66A	59 55 49 4F 	      	FCB   	'Y','U','I','O','P',$00,$00,$00	
 		50 00 00 00 
-0811	D538	48 4A 4B 4C 	      	FCB   	'H','J','K','L',';',$00,$00,$00	
+0955	D672	48 4A 4B 4C 	      	FCB   	'H','J','K','L',';',$00,$00,$00	
 		3B 00 00 00 
-0812	D540	56 42 4E 4D 	      	FCB   	'V','B','N','M',$2C,$00,$00,$00	
+0956	D67A	56 42 4E 4D 	      	FCB   	'V','B','N','M',$2C,$00,$00,$00	
 		2C 00 00 00 
-0813	D548	2E 20 3A 0D 	      	FCB   	'.',' ',':',$0D,'-',$00,$00,$00	
+0957	D682	2E 20 3A 0D 	      	FCB   	'.',' ',':',$0D,'-',$00,$00,$00	
 		2D 00 00 00 
-0814				
-0815				;--------------- SHIFT用 KEY TABLE ------------------
-0816	D550	00 00 00 00 	KTBL2 	FCB   	$00,$00,$00,$00,$00,$00,$00,$00	
+0958				
+0959				;--------------- SHIFT用 KEY TABLE ------------------
+0960	D68A	00 00 00 00 	KTBL2 	FCB   	$00,$00,$00,$00,$00,$00,$00,$00	
 		00 00 00 00 
-0817	D558	00 00 00 00 	      	FCB   	$00,$00,$00,$00,$00,$00,$00,$00	
+0961	D692	00 00 00 00 	      	FCB   	$00,$00,$00,$00,$00,$00,$00,$00	
 		00 00 00 00 
-0818	D560	00 00 00 00 	      	FCB   	$00,$00,$00,$00,$00,$00,$00,$00	
+0962	D69A	00 00 00 00 	      	FCB   	$00,$00,$00,$00,$00,$00,$00,$00	
 		00 00 00 00 
-0819	D568	21 22 23 24 	      	FCB   	'!','"','#','$','%',$00,$00,$00	
+0963	D6A2	21 22 23 24 	      	FCB   	'!','"','#','$','%',$00,$00,$00	
 		25 00 00 00 
-0820	D570	26 27 29 28 	      	FCB   	'&',$27,')','(','^',$00,$00,$00	
+0964	D6AA	26 27 29 28 	      	FCB   	'&',$27,')','(','^',$00,$00,$00	
 		5E 00 00 00 
-0821	D578	00 40 5C 5B 	      	FCB   	$00,'@','\','[',']',$00,$00,$00	
+0965	D6B2	00 40 5C 5B 	      	FCB   	$00,'@','\','[',']',$00,$00,$00	
 		5D 00 00 00 
-0822	D580	00 00 3F 2F 	      	FCB   	$00,$00,'?','/','+',$00,$00,$00	
+0966	D6BA	00 00 3F 2F 	      	FCB   	$00,$00,'?','/','+',$00,$00,$00	
 		2B 00 00 00 
-0823	D588	00 00 00 2D 	      	FCB   	$00,$00,$00,'-','<',$00,$00,$00	
+0967	D6C2	00 00 00 2D 	      	FCB   	$00,$00,$00,'-','<',$00,$00,$00	
 		3C 00 00 00 
-0824	D590	3E 20 2A 0D 	      	FCB   	'>',' ','*',$0D,'=',$00,$00,$00	
+0968	D6CA	3E 20 2A 0D 	      	FCB   	'>',' ','*',$0D,'=',$00,$00,$00	
 		3D 00 00 00 
-0825				
-0826				;--------------- MESSAGE -------------------------
-0827	D598	4A 52 2D 31 	SDMSG 	FCC     	/JR-100_SD READY OK!/	
+0969				
+0970				;--------------- MESSAGE -------------------------
+0971	D6D2	4A 52 2D 31 	SDMSG 	FCC     	/JR-100_SD READY OK!/	
     	    	30 30 5F 53 
     	    	44 20 52 45 
     	    	41 44 59 20 
     	    	4F 4B 21 
-0828	D5AB	0A 0D 00 		      	FCB   	$0A,$0D,$00    	
-0829				
-0830	D5AE	43 4D 54 20 	CMTMSG	FCC     	/CMT OK!/	
+0972	D6E5	0A 0D 00 		      	FCB   	$0A,$0D,$00    	
+0973				
+0974	D6E8	43 4D 54 20 	CMTMSG	FCC     	/CMT OK!/	
     	    	4F 4B 21 
-0831	D5B5	0A 0D 00 		      	FCB   	$0A,$0D,$00    	
-0832				
-0833	D5B8	0A 0D 		BSMSG 	FCB   	$0A,$0D        	
-0834	D5BA	42 41 53 49 	      	FCC     	/BASIC /	
+0975	D6EF	0A 0D 00 		      	FCB   	$0A,$0D,$00    	
+0976				
+0977	D6F2	0A 0D 		BSMSG 	FCB   	$0A,$0D        	
+0978	D6F4	42 41 53 49 	      	FCC     	/BASIC /	
     	    	43 20 
-0835	D5C0	00 		      	FCB   	$00            	
-0836				
-0837	D5C1	0A 0D 		BNMSG 	FCB   	$0A,$0D        	
-0838	D5C3	42 49 4E 41 	      	FCC     	/BINARY /	
+0979	D6FA	00 		      	FCB   	$00            	
+0980				
+0981	D6FB	0A 0D 		BNMSG 	FCB   	$0A,$0D        	
+0982	D6FD	42 49 4E 41 	      	FCC     	/BINARY /	
     	    	52 59 20 
-0839	D5CA	00 		      	FCB   	$00            	
-0840				
-0841	D5CB	4C 4F 41 44 	LDMSG 	FCC     	/LOADING /	
+0983	D704	00 		      	FCB   	$00            	
+0984				
+0985	D705	4C 4F 41 44 	LDMSG 	FCC     	/LOADING /	
     	    	49 4E 47 20 
-0842	D5D3	00 		      	FCB   	$00            	
-0843				
-0844	D5D4	0A 0D 		SVMSG 	FCB   	$0A,$0D        	
-0845	D5D6	53 41 56 45 	      	FCC     	/SAVEING/	
+0986	D70D	00 		      	FCB   	$00            	
+0987				
+0988	D70E	0A 0D 		SVMSG 	FCB   	$0A,$0D        	
+0989	D710	53 41 56 45 	      	FCC     	/SAVEING/	
     	    	49 4E 47 
-0846	D5DD	0A 0D 00 		      	FCB   	$0A,$0D,$00    	
-0847				
-0848	D5E0	0A 0D 00 		CRLF  	FCB   	$0A,$0D,$00    	
-0849				
-0850	D5E3			MSG_F0				
-0851	D5E3	53 44 2D 43 	      	FCC     	/SD-CARD INITIALIZE ERROR/	
+0990	D717	0A 0D 00 		      	FCB   	$0A,$0D,$00    	
+0991				
+0992	D71A	0A 0D 00 		CRLF  	FCB   	$0A,$0D,$00    	
+0993				
+0994	D71D			MSG_F0				
+0995	D71D	53 44 2D 43 	      	FCC     	/SD-CARD INITIALIZE ERROR/	
     	    	41 52 44 20 
     	    	49 4E 49 54 
     	    	49 41 4C 49 
     	    	5A 45 20 45 
     	    	52 52 4F 52 
-0852	D5FB	0D 0A 00 		      	FCB   	$0D,$0A,$00    	
-0853				
-0854	D5FE			MSG_F1				
-0855	D5FE	4E 4F 54 20 	      	FCC     	/NOT FIND FILE/	
+0996	D735	0D 0A 00 		      	FCB   	$0D,$0A,$00    	
+0997				
+0998	D738			MSG_F1				
+0999	D738	4E 4F 54 20 	      	FCC     	/NOT FIND FILE/	
     	    	46 49 4E 44 
     	    	20 46 49 4C 
     	    	45 
-0856	D60B	0D 0A 00 		      	FCB   	$0D,$0A,$00    	
-0857				
-0858	D60E			MSG_F3				
-0859	D60E	46 49 4C 45 	      	FCC     	/FILE EXIST/	
+1000	D745	0D 0A 00 		      	FCB   	$0D,$0A,$00    	
+1001				
+1002	D748			MSG_F3				
+1003	D748	46 49 4C 45 	      	FCC     	/FILE EXIST/	
     	    	20 45 58 49 
     	    	53 54 
-0860	D618	0D 0A 00 		      	FCB   	$0D,$0A,$00    	
-0861				
-0862	D61B			MSG99 				
-0863	D61B	20 45 52 52 	      	FCC     	/ ERROR/	
+1004	D752	0D 0A 00 		      	FCB   	$0D,$0A,$00    	
+1005				
+1006	D755			MSG_F4				
+1007	D755	50 52 4F 47 	      	FCC     	/PROG FORMAT VERSION ERROR/	
+    	    	20 46 4F 52 
+    	    	4D 41 54 20 
+    	    	56 45 52 53 
+    	    	49 4F 4E 20 
+    	    	45 52 52 4F 
+    	    	52 
+1008	D76E	0D 0A 00 		      	FCB   	$0D,$0A,$00    	
+1009				
+1010	D771			MSG99 				
+1011	D771	20 45 52 52 	      	FCC     	/ ERROR/	
     	    	4F 52 
-0864	D621	0D 0A 00 		      	FCB   	$0D,$0A,$00    	
-0865				
-0866	D624			MSG_AD				
-0867	D624	41 44 44 52 	      	FCC     	/ADDRESS ERROR/	
+1012	D777	0D 0A 00 		      	FCB   	$0D,$0A,$00    	
+1013				
+1014	D77A			MSG_AD				
+1015	D77A	41 44 44 52 	      	FCC     	/ADDRESS ERROR/	
     	    	45 53 53 20 
     	    	45 52 52 4F 
     	    	52 
-0868	D631	0D 0A 00 		      	FCB   	$0D,$0A,$00    	
-0869				
-0870	D634	53 45 4C 3A 	MSGKEY	FCC     	/SEL:0-9 NXT:ANY BCK:B BRK:RET/	
+1016	D787	0D 0A 00 		      	FCB   	$0D,$0A,$00    	
+1017				
+1018	D78A	53 45 4C 3A 	MSGKEY	FCC     	/SEL:0-9 NXT:ANY BCK:B BRK:RET/	
     	    	30 2D 39 20 
     	    	4E 58 54 3A 
     	    	41 4E 59 20 
@@ -916,507 +1070,507 @@
     	    	42 20 42 52 
     	    	4B 3A 52 45 
     	    	54 
-0871	D651	0D 0A 00 		      	FCB   	$0D,$0A,$00    	
-0872				
-0873				**** BUSYをCHECK(1) ****
-0874				;PORTC BIT7が1になるまでLOOP
-0875	D654	B6 CC12		F1CHK 	LDAA  	PIOC           	
-0876	D657	84 80		      	ANDA  	#$80           	;PORTC BIT7 = 1?
-0877	D659	27 F9		      	BEQ   	F1CHK          	
-0878	D65B	39		      	RTS   			
-0879				
-0880				**** BUSYをCHECK(0) ****
-0881				;PORTC BIT7が0になるまでLOOP
-0882	D65C	B6 CC12		F2CHK 	LDAA  	PIOC           	
-0883	D65F	84 80		      	ANDA  	#$80           	;PORTC BIT7 = 0?
-0884	D661	26 F9		      	BNE   	F2CHK          	
-0885	D663	39		      	RTS   			
-0886				
-0887				**** 1BYTE受信****
-0888				*受信データをアキュムレータAにセットしてリターン
-0889	D664	8D EE		RCVBYTE	BSR   	F1CHK          	;PORTC BIT7が1になるまでLOOP
-0890	D666	B6 CC11		      	LDAA  	PIOB           	;PORTB -> A
-0891	D669	36		      	PSHA  			
-0892	D66A	86 05		      	LDAA  	#$05           	
-0893	D66C	B7 CC13		      	STAA  	PIOR           	;PORTC BIT2 <- 1
-0894	D66F	8D EB		      	BSR   	F2CHK          	;PORTC BIT7が0になるまでLOOP
-0895	D671	86 04		      	LDAA  	#$04           	
-0896	D673	B7 CC13		      	STAA  	PIOR           	;PORTC BIT2 <- 0
-0897	D676	32		      	PULA  			
-0898	D677	39		      	RTS   			
-0899				
-0900				**** 1BYTE送信 ****
-0901				*アキュムレータAの内容をPORTA下位4BITに4BITずつ送信
-0902	D678			SNDBYTE				
-0903	D678	36		      	PSHA  			
-0904	D679	44		      	LSRA  			
-0905	D67A	44		      	LSRA  			
-0906	D67B	44		      	LSRA  			
-0907	D67C	44		      	LSRA  			
-0908	D67D	84 0F		      	ANDA  	#$0F           	
-0909	D67F	8D 06		      	BSR   	SND4BIT        	
-0910	D681	32		      	PULA  			
-0911	D682	84 0F		      	ANDA  	#$0F           	
-0912	D684	8D 01		      	BSR   	SND4BIT        	
-0913	D686	39		      	RTS   			
-0914				
-0915				**** 4BIT送信 ****
-0916				*アキュムレータA下位4ビットを送信する
-0917	D687			SND4BIT				
-0918	D687	B7 CC10		      	STAA  	PIOA           	
-0919	D68A	86 05		      	LDAA  	#$05           	
-0920	D68C	B7 CC13		      	STAA  	PIOR           	;PORTC BIT2 <- 1
-0921	D68F	8D C3		      	BSR   	F1CHK          	;PORTC BIT7が1になるまでLOOP
-0922	D691	86 04		      	LDAA  	#$04           	
-0923	D693	B7 CC13		      	STAA  	PIOR           	;PORTC BIT2 <- 0
-0924	D696	8D C4		      	BSR   	F2CHK          	
-0925	D698	39		      	RTS   			
-0926				
-0927				
-0928				**** 8255初期化 ****
-0929				*PORTC下位BITをOUTPUT、上位BITをINPUT、PORTBをINPUT、PORTAをOUTPUT
-0930	D699	86 8A		PIOINI	LDAA  	#$8A           	
-0931	D69B	B7 CC13		      	STAA  	PIOR           	;PIOR <- $8A
-0932	D69E	4F		      	CLRA  			
-0933	D69F	B7 CC10		      	STAA  	PIOA           	;PIOA <- $00
-0934	D6A2	B7 CC12		      	STAA  	PIOC           	;PIOC <- $00
-0935	D6A5	39		      	RTS   			
-0936				
-0937				
-0938				;---------------------- BASICコマンドテーブルを再定義 ------------------
-0939	D6A6			BTBL  				
-0940	D6A6	E439 		      	FDB   	$E439          	
-0941				
-0942	D6A8	4C 49 53 		      	FCC     	/LIS/   	
-0943	D6AB	D4 		      	FCB   	'T'+$80        	
-0944	D6AC	F3C2 		      	FDB   	$F3C2          	
-0945				
-0946	D6AE	52 55 		      	FCC     	/RU/    	
-0947	D6B0	CE 		      	FCB   	'N'+$80        	
-0948	D6B1	E6AB 		      	FDB   	$E6AB          	
-0949				
-0950	D6B3	52 45 53 45 	      	FCC     	/RESE/  	
-0951	D6B7	D4 		      	FCB   	'T'+$80        	
-0952	D6B8	E400 		      	FDB   	$E400          	
-0953				
-0954	D6BA	41 55 54 		      	FCC     	/AUT/   	
-0955	D6BD	CF 		      	FCB   	'O'+$80        	
-0956	D6BE	E526 		      	FDB   	$E526          	
-0957				
-0958	D6C0	4E 45 		      	FCC     	/NE/    	
-0959	D6C2	D7 		      	FCB   	'W'+$80        	
-0960	D6C3	E41E 		      	FDB   	$E41E          	
-0961				
-0962	D6C5	4C 4C 49 53 	      	FCC     	/LLIS/  	
-0963	D6C9	D4 		      	FCB   	'T'+$80        	
-0964	D6CA	F3BF 		      	FDB   	$F3BF          	
-0965				
-0966	D6CC	46 49 4E 44 	      	FCC     	/FIND/  	
-0967	D6D0	A2 		      	FCB   	'"'+$80        	
-0968	D6D1	F120 		      	FDB   	$F120          	
-0969				
-0970	D6D3	43 4F 4E 		      	FCC     	/CON/   	
-0971	D6D6	D4 		      	FCB   	'T'+$80        	
-0972	D6D7			CTBL  				
-0973	D6D7	F21E 		      	FDB   	$F21E          	
-0974				
-0975	D6D9	4C 45 		      	FCC     	/LE/    	
-0976	D6DB	D4 		      	FCB   	'T'+$80        	
-0977	D6DC	F26E 		      	FDB   	$F26E          	
-0978				
-0979	D6DE	49 		      	FCC     	/I/     	
-0980	D6DF	C6 		      	FCB   	'F'+$80        	
-0981	D6E0	E67B 		      	FDB   	$E67B          	
-0982				
-0983	D6E2	47 4F 54 		      	FCC     	/GOT/   	
-0984	D6E5	CF 		      	FCB   	'O'+$80        	
-0985	D6E6	F255 		      	FDB   	$F255          	
-0986				
-0987	D6E8	47 4F 53 55 	      	FCC     	/GOSU/  	
-0988	D6EC	C2 		      	FCB   	'B'+$80        	
-0989	D6ED	F256 		      	FDB   	$F256          	
-0990				
-0991	D6EF	52 45 		      	FCC     	/RE/    	
-0992	D6F1	D4 		      	FCB   	'T'+$80        	
-0993	D6F2	F22A 		      	FDB   	$F22A          	
-0994				
-0995	D6F4	4E 45 58 		      	FCC     	/NEX/   	
-0996	D6F7	D4 		      	FCB   	'T'+$80        	
-0997	D6F8	F2F8 		      	FDB   	$F2F8          	
-0998				
-0999	D6FA	46 4F 		      	FCC     	/FO/    	
-1000	D6FC	D2 		      	FCB   	'R'+$80        	
-1001	D6FD	F294 		      	FDB   	$F294          	
-1002				
-1003	D6FF	54 48 45 		      	FCC     	/THE/   	
-1004	D702	CE 		      	FCB   	'N'+$80        	
-1005	D703	F1FD 		      	FDB   	$F1FD          	
-1006				
-1007	D705	50 4F 4B 		      	FCC     	/POK/   	
-1008	D708	C5 		      	FCB   	'E'+$80        	
-1009	D709	EF38 		      	FDB   	$EF38          	
-1010				
-1011	D70B	52 45 41 		      	FCC     	/REA/   	
-1012	D70E	C4 		      	FCB   	'D'+$80        	
-1013	D70F	F08B 		      	FDB   	$F08B          	
-1014				
-1015	D711	44 41 54 		      	FCC     	/DAT/   	
-1016	D714	C1 		      	FCB   	'A'+$80        	
-1017	D715	F033 		      	FDB   	$F033          	
-1018				
-1019	D717	4C 4F 43 41 	      	FCC     	/LOCAT/ 	
-    	    	54 
-1020	D71C	C5 		      	FCB   	'E'+$80        	
-1021	D71D	F19F 		      	FDB   	$F19F          	
-1022				
-1023	D71F	50 49 43 		      	FCC     	/PIC/   	
-1024	D722	CB 		      	FCB   	'K'+$80        	
-1025	D723	EF63 		      	FDB   	$EF63          	
-1026				
-1027	D725	52 45 53 54 	      	FCC     	/RESTOR/	
-    	    	4F 52 
-1028	D72B	C5 		      	FCB   	'E'+$80        	
-1029	D72C	F0F3 		      	FDB   	$F0F3          	
-1030				
-1031	D72E	52 45 		      	FCC     	/RE/    	
-1032	D730	CD 		      	FCB   	'M'+$80        	
-1033	D731	E652 		      	FDB   	$E652          	
+1019	D7A7	0D 0A 00 		      	FCB   	$0D,$0A,$00    	
+1020				
+1021				**** BUSYをCHECK(1) ****
+1022				;PORTC BIT7が1になるまでLOOP
+1023	D7AA	B6 CC12		F1CHK 	LDAA  	PIOC           	
+1024	D7AD	84 80		      	ANDA  	#$80           	;PORTC BIT7 = 1?
+1025	D7AF	27 F9		      	BEQ   	F1CHK          	
+1026	D7B1	39		      	RTS   			
+1027				
+1028				**** BUSYをCHECK(0) ****
+1029				;PORTC BIT7が0になるまでLOOP
+1030	D7B2	B6 CC12		F2CHK 	LDAA  	PIOC           	
+1031	D7B5	84 80		      	ANDA  	#$80           	;PORTC BIT7 = 0?
+1032	D7B7	26 F9		      	BNE   	F2CHK          	
+1033	D7B9	39		      	RTS   			
 1034				
-1035	D733	50 52 49 4E 	      	FCC     	/PRIN/  	
-1036	D737	D4 		      	FCB   	'T'+$80        	
-1037	D738	E758 		      	FDB   	$E758          	
-1038				
-1039	D73A	49 4E 50 55 	      	FCC     	/INPU/  	
-1040	D73E	D4 		      	FCB   	'T'+$80        	
-1041	D73F	F33A 		      	FDB   	$F33A          	
-1042				
-1043	D741	44 49 		      	FCC     	/DI/    	
-1044	D743	CD 		      	FCB   	'M'+$80        	
-1045	D744	EC9A 		      	FDB   	$EC9A          	
-1046				
-1047	D746	43 4C 45 41 	      	FCC     	/CLEA/  	
-1048	D74A	D2 		      	FCB   	'R'+$80        	
-1049	D74B	E426 		      	FDB   	$E426          	
-1050				
-1051	D74D	53 54 4F 		      	FCC     	/STO/   	
-1052	D750	D0 		      	FCB   	'P'+$80        	
-1053	D751	E545 		      	FDB   	$E545          	
-1054				
-1055	D753	45 4E 		      	FCC     	/EN/    	
-1056	D755	C4 		      	FCB   	'D'+$80        	
-1057	D756	E5A3 		      	FDB   	$E5A3          	
-1058				
-1059	D758	4C 50 52 49 	      	FCC     	/LPRIN/ 	
-    	    	4E 
-1060	D75D	D4 		      	FCB   	'T'+$80        	
-1061	D75E	E756 		      	FDB   	$E756          	
+1035				**** 1BYTE受信****
+1036				*受信データをアキュムレータAにセットしてリターン
+1037	D7BA	8D EE		RCVBYTE	BSR   	F1CHK          	;PORTC BIT7が1になるまでLOOP
+1038	D7BC	B6 CC11		      	LDAA  	PIOB           	;PORTB -> A
+1039	D7BF	36		      	PSHA  			
+1040	D7C0	86 05		      	LDAA  	#$05           	
+1041	D7C2	B7 CC13		      	STAA  	PIOR           	;PORTC BIT2 <- 1
+1042	D7C5	8D EB		      	BSR   	F2CHK          	;PORTC BIT7が0になるまでLOOP
+1043	D7C7	86 04		      	LDAA  	#$04           	
+1044	D7C9	B7 CC13		      	STAA  	PIOR           	;PORTC BIT2 <- 0
+1045	D7CC	32		      	PULA  			
+1046	D7CD	39		      	RTS   			
+1047				
+1048				**** 1BYTE送信 ****
+1049				*アキュムレータAの内容をPORTA下位4BITに4BITずつ送信
+1050	D7CE			SNDBYTE				
+1051	D7CE	36		      	PSHA  			
+1052	D7CF	44		      	LSRA  			
+1053	D7D0	44		      	LSRA  			
+1054	D7D1	44		      	LSRA  			
+1055	D7D2	44		      	LSRA  			
+1056	D7D3	84 0F		      	ANDA  	#$0F           	
+1057	D7D5	8D 06		      	BSR   	SND4BIT        	
+1058	D7D7	32		      	PULA  			
+1059	D7D8	84 0F		      	ANDA  	#$0F           	
+1060	D7DA	8D 01		      	BSR   	SND4BIT        	
+1061	D7DC	39		      	RTS   			
 1062				
-1063	D760	4F 50 54 49 	      	FCC     	/OPTIO/ 	
-    	    	4F 
-1064	D765	CE 		      	FCB   	'N'+$80        	
-1065	D766	EFEA 		      	FDB   	$EFEA          	
-1066				
-1067	D768	42 45 45 50 	      	FCC     	/BEEP/  	
-1068	D76C	B0 		      	FCB   	'0'+$80        	
-1069	D76D	F021 		      	FDB   	$F021          	
-1070				
-1071	D76F	42 45 45 50 	      	FCC     	/BEEP/  	
-1072	D773	B1 		      	FCB   	'1'+$80        	
-1073	D774	F000 		      	FDB   	$F000          	
+1063				**** 4BIT送信 ****
+1064				*アキュムレータA下位4ビットを送信する
+1065	D7DD			SND4BIT				
+1066	D7DD	B7 CC10		      	STAA  	PIOA           	
+1067	D7E0	86 05		      	LDAA  	#$05           	
+1068	D7E2	B7 CC13		      	STAA  	PIOR           	;PORTC BIT2 <- 1
+1069	D7E5	8D C3		      	BSR   	F1CHK          	;PORTC BIT7が1になるまでLOOP
+1070	D7E7	86 04		      	LDAA  	#$04           	
+1071	D7E9	B7 CC13		      	STAA  	PIOR           	;PORTC BIT2 <- 0
+1072	D7EC	8D C4		      	BSR   	F2CHK          	
+1073	D7EE	39		      	RTS   			
 1074				
-1075	D776	42 45 45 		      	FCC     	/BEE/   	
-1076	D779	D0 		      	FCB   	'P'+$80        	
-1077	D77A	F018 		      	FDB   	$F018          	
-1078				
-1079	D77C	48 43 4F 50 	      	FCC     	/HCOP/  	
-1080	D780	D9 		      	FCB   	'Y'+$80        	
-1081	D781	E504 		      	FDB   	$E504          	
-1082				
-1083	D783	4C 4F 41 		      	FCC     	/LOA/   	
-1084	D786	C4 		      	FCB   	'D'+$80        	
-1085				;		FDB		$F4EF
-1086	D787	D046 		      	FDB   	LOAD           	
-1087				
-1088	D789	4D 45 58 45 	      	FCC     	/MEXE/  	
-1089	D78D	C3 		      	FCB   	'C'+$80        	
-1090				;		FDB		$F4E3
-1091	D78E	D3F3 		      	FDB   	MEXEC          	
-1092				
-1093	D790	53 41 56 		      	FCC     	/SAV/   	
-1094	D793	C5 		      	FCB   	'E'+$80        	
-1095				;		FDB		$F508
-1096	D794	D1A2 		      	FDB   	BSAVE          	
+1075				
+1076				**** 8255初期化 ****
+1077				*PORTC下位BITをOUTPUT、上位BITをINPUT、PORTBをINPUT、PORTAをOUTPUT
+1078	D7EF	86 8A		PIOINI	LDAA  	#$8A           	
+1079	D7F1	B7 CC13		      	STAA  	PIOR           	;PIOR <- $8A
+1080	D7F4	4F		      	CLRA  			
+1081	D7F5	B7 CC10		      	STAA  	PIOA           	;PIOA <- $00
+1082	D7F8	B7 CC12		      	STAA  	PIOC           	;PIOC <- $00
+1083	D7FB	39		      	RTS   			
+1084				
+1085				
+1086				;---------------------- BASICコマンドテーブルを再定義 ------------------
+1087	D7FC			BTBL  				
+1088	D7FC	E439 		      	FDB   	$E439          	
+1089				
+1090	D7FE	4C 49 53 		      	FCC     	/LIS/   	
+1091	D801	D4 		      	FCB   	'T'+$80        	
+1092	D802	F3C2 		      	FDB   	$F3C2          	
+1093				
+1094	D804	52 55 		      	FCC     	/RU/    	
+1095	D806	CE 		      	FCB   	'N'+$80        	
+1096	D807	E6AB 		      	FDB   	$E6AB          	
 1097				
-1098	D796	4D 53 41 56 	      	FCC     	/MSAVE/ 	
-    	    	45 
-1099	D79B	A2 		      	FCB   	'"'+$80        	
-1100				;		FDB		$F517
-1101	D79C	D264 		      	FDB   	MSAVE          	
-1102				
-1103	D79E	56 45 52 49 	      	FCC     	/VERIF/ 	
-    	    	46 
-1104	D7A3	D9 		      	FCB   	'Y'+$80        	
-1105	D7A4	F4FC 		      	FDB   	$F4FC          	
-1106				
-1107	D7A6	43 4C 		      	FCC     	/CL/    	
-1108	D7A8	D3 		      	FCB   	'S'+$80        	
-1109	D7A9	F47C 		      	FDB   	$F47C          	
-1110				
-1111	D7AB	53 44 44 49 	      	FCC     	/SDDI/  	
-1112	D7AF	D2 		      	FCB   	'R'+$80        	
-1113	D7B0	D32D 		      	FDB   	FILES          	
-1114				
-1115	D7B2	FF 		      	FCB   	$FF            	
-1116	D7B3	F26E 		      	FDB   	$F26E          	
+1098	D809	52 45 53 45 	      	FCC     	/RESE/  	
+1099	D80D	D4 		      	FCB   	'T'+$80        	
+1100	D80E	E400 		      	FDB   	$E400          	
+1101				
+1102	D810	41 55 54 		      	FCC     	/AUT/   	
+1103	D813	CF 		      	FCB   	'O'+$80        	
+1104	D814	E526 		      	FDB   	$E526          	
+1105				
+1106	D816	4E 45 		      	FCC     	/NE/    	
+1107	D818	D7 		      	FCB   	'W'+$80        	
+1108	D819	E41E 		      	FDB   	$E41E          	
+1109				
+1110	D81B	4C 4C 49 53 	      	FCC     	/LLIS/  	
+1111	D81F	D4 		      	FCB   	'T'+$80        	
+1112	D820	F3BF 		      	FDB   	$F3BF          	
+1113				
+1114	D822	46 49 4E 44 	      	FCC     	/FIND/  	
+1115	D826	A2 		      	FCB   	'"'+$80        	
+1116	D827	F120 		      	FDB   	$F120          	
 1117				
-1118	D7B5	52 4E 44 		      	FCC     	/RND/   	
-1119	D7B8	A8 		      	FCB   	'('+$80        	
-1120	D7B9	EB2C 		      	FDB   	$EB2C          	
-1121				
-1122	D7BB	41 42 53 		      	FCC     	/ABS/   	
-1123	D7BE	A8 		      	FCB   	'('+$80        	
-1124	D7BF	E95C 		      	FDB   	$E95C          	
-1125				
-1126	D7C1	4D 4F 44 		      	FCC     	/MOD/   	
-1127	D7C4	A8 		      	FCB   	'('+$80        	
-1128	D7C5	EB0C 		      	FDB   	$EB0C          	
-1129				
-1130	D7C7	41 53 43 		      	FCC     	/ASC/   	
-1131	D7CA	A8 		      	FCB   	'('+$80        	
-1132	D7CB	EFB7 		      	FDB   	$EFB7          	
-1133				
-1134	D7CD	46 52 45 		      	FCC     	/FRE/   	
-1135	D7D0	A8 		      	FCB   	'('+$80        	
-1136	D7D1	EF6F 		      	FDB   	$EF6F          	
-1137				
-1138	D7D3	50 45 45 4B 	      	FCC     	/PEEK/  	
-1139	D7D7	A8 		      	FCB   	'('+$80        	
-1140	D7D8	EF4D 		      	FDB   	$EF4D          	
-1141				
-1142	D7DA	53 47 4E 		      	FCC     	/SGN/   	
-1143	D7DD	A8 		      	FCB   	'('+$80        	
-1144	D7DE	EF74 		      	FDB   	$EF74          	
-1145				
-1146	D7E0	4C 45 4E 		      	FCC     	/LEN/   	
-1147	D7E3	A8 		      	FCB   	'('+$80        	
-1148	D7E4	EFAB 		      	FDB   	$EFAB          	
-1149				
-1150	D7E6	56 50 4F 53 	      	FCC     	/VPOS/  	
-1151	D7EA	A8 		      	FCB   	'('+$80        	
-1152	D7EB	F185 		      	FDB   	$F185          	
-1153				
-1154	D7ED	48 50 4F 53 	      	FCC     	/HPOS/  	
-1155	D7F1	A8 		      	FCB   	'('+$80        	
-1156	D7F2	F175 		      	FDB   	$F175          	
-1157				
-1158	D7F4	55 53 52 		      	FCC     	/USR/   	
-1159	D7F7	A8 		      	FCB   	'('+$80        	
-1160	D7F8	EB41 		      	FDB   	$EB41          	
-1161				
-1162	D7FA	56 41 4C 		      	FCC     	/VAL/   	
-1163	D7FD	A8 		      	FCB   	'('+$80        	
-1164	D7FE	EFBF 		      	FDB   	$EFBF          	
-1165				
-1166	D800	FF 		      	FCB   	$FF            	
-1167	D801	EAA5 		      	FDB   	$EAA5          	
-1168				
-1169	D803	54 		      	FCC     	/T/     	
-1170	D804	CF 		      	FCB   	'O'+$80        	
-1171	D805	1234 		      	FDB   	$1234          	
-1172				
-1173	D807	53 54 45 		      	FCC     	/STE/   	
-1174	D80A	D0 		      	FCB   	'P'+$80        	
-1175	D80B	ABCD 		      	FDB   	$ABCD          	
-1176				
-1177	D80D	53 50 43 		      	FCC     	/SPC/   	
-1178	D810	A8 		      	FCB   	'('+$80        	
-1179	D811	EF95 		      	FDB   	$EF95          	
-1180				
-1181	D813	54 41 42 		      	FCC     	/TAB/   	
-1182	D816	A8 		      	FCB   	'('+$80        	
-1183	D817	E78F 		      	FDB   	$E78F          	
-1184				
-1185	D819	46 4C 44 		      	FCC     	/FLD/   	
-1186	D81C	A8 		      	FCB   	'('+$80        	
-1187	D81D	EFD3 		      	FDB   	$EFD3          	
-1188				
-1189	D81F	FF 		      	FCB   	$FF            	
-1190	D820	E7C4 		      	FDB   	$E7C4          	
-1191				
-1192	D822	48 45 58 24 	      	FCC     	/HEX$/  	
-1193	D826	A8 		      	FCB   	'('+$80        	
-1194	D827	F147 		      	FDB   	$F147          	
-1195				
-1196	D829	43 48 52 24 	      	FCC     	/CHR$/  	
-1197	D82D	A8 		      	FCB   	'('+$80        	
-1198	D82E	F1EC 		      	FDB   	$F1EC          	
-1199				
-1200	D830	4C 45 46 54 	      	FCC     	/LEFT$/ 	
-    	    	24 
-1201	D835	A8 		      	FCB   	'('+$80        	
-1202	D836	EE80 		      	FDB   	$EE80          	
-1203				
-1204	D838	52 49 47 48 	      	FCC     	/RIGHT$/	
-    	    	54 24 
-1205	D83E	A8 		      	FCB   	'('+$80        	
-1206	D83F	EE88 		      	FDB   	$EE88          	
-1207				
-1208	D841	4D 49 44 24 	      	FCC     	/MID$/  	
-1209	D845	A8 		      	FCB   	'('+$80        	
-1210	D846	EEA2 		      	FDB   	$EEA2          	
-1211				
-1212	D848	FF 		      	FCB   	$FF            	
-1213	D849	EEEF 		      	FDB   	$EEEF          	
+1118	D829	43 4F 4E 		      	FCC     	/CON/   	
+1119	D82C	D4 		      	FCB   	'T'+$80        	
+1120	D82D			CTBL  				
+1121	D82D	F21E 		      	FDB   	$F21E          	
+1122				
+1123	D82F	4C 45 		      	FCC     	/LE/    	
+1124	D831	D4 		      	FCB   	'T'+$80        	
+1125	D832	F26E 		      	FDB   	$F26E          	
+1126				
+1127	D834	49 		      	FCC     	/I/     	
+1128	D835	C6 		      	FCB   	'F'+$80        	
+1129	D836	E67B 		      	FDB   	$E67B          	
+1130				
+1131	D838	47 4F 54 		      	FCC     	/GOT/   	
+1132	D83B	CF 		      	FCB   	'O'+$80        	
+1133	D83C	F255 		      	FDB   	$F255          	
+1134				
+1135	D83E	47 4F 53 55 	      	FCC     	/GOSU/  	
+1136	D842	C2 		      	FCB   	'B'+$80        	
+1137	D843	F256 		      	FDB   	$F256          	
+1138				
+1139	D845	52 45 		      	FCC     	/RE/    	
+1140	D847	D4 		      	FCB   	'T'+$80        	
+1141	D848	F22A 		      	FDB   	$F22A          	
+1142				
+1143	D84A	4E 45 58 		      	FCC     	/NEX/   	
+1144	D84D	D4 		      	FCB   	'T'+$80        	
+1145	D84E	F2F8 		      	FDB   	$F2F8          	
+1146				
+1147	D850	46 4F 		      	FCC     	/FO/    	
+1148	D852	D2 		      	FCB   	'R'+$80        	
+1149	D853	F294 		      	FDB   	$F294          	
+1150				
+1151	D855	54 48 45 		      	FCC     	/THE/   	
+1152	D858	CE 		      	FCB   	'N'+$80        	
+1153	D859	F1FD 		      	FDB   	$F1FD          	
+1154				
+1155	D85B	50 4F 4B 		      	FCC     	/POK/   	
+1156	D85E	C5 		      	FCB   	'E'+$80        	
+1157	D85F	EF38 		      	FDB   	$EF38          	
+1158				
+1159	D861	52 45 41 		      	FCC     	/REA/   	
+1160	D864	C4 		      	FCB   	'D'+$80        	
+1161	D865	F08B 		      	FDB   	$F08B          	
+1162				
+1163	D867	44 41 54 		      	FCC     	/DAT/   	
+1164	D86A	C1 		      	FCB   	'A'+$80        	
+1165	D86B	F033 		      	FDB   	$F033          	
+1166				
+1167	D86D	4C 4F 43 41 	      	FCC     	/LOCAT/ 	
+    	    	54 
+1168	D872	C5 		      	FCB   	'E'+$80        	
+1169	D873	F19F 		      	FDB   	$F19F          	
+1170				
+1171	D875	50 49 43 		      	FCC     	/PIC/   	
+1172	D878	CB 		      	FCB   	'K'+$80        	
+1173	D879	EF63 		      	FDB   	$EF63          	
+1174				
+1175	D87B	52 45 53 54 	      	FCC     	/RESTOR/	
+    	    	4F 52 
+1176	D881	C5 		      	FCB   	'E'+$80        	
+1177	D882	F0F3 		      	FDB   	$F0F3          	
+1178				
+1179	D884	52 45 		      	FCC     	/RE/    	
+1180	D886	CD 		      	FCB   	'M'+$80        	
+1181	D887	E652 		      	FDB   	$E652          	
+1182				
+1183	D889	50 52 49 4E 	      	FCC     	/PRIN/  	
+1184	D88D	D4 		      	FCB   	'T'+$80        	
+1185	D88E	E758 		      	FDB   	$E758          	
+1186				
+1187	D890	49 4E 50 55 	      	FCC     	/INPU/  	
+1188	D894	D4 		      	FCB   	'T'+$80        	
+1189	D895	F33A 		      	FDB   	$F33A          	
+1190				
+1191	D897	44 49 		      	FCC     	/DI/    	
+1192	D899	CD 		      	FCB   	'M'+$80        	
+1193	D89A	EC9A 		      	FDB   	$EC9A          	
+1194				
+1195	D89C	43 4C 45 41 	      	FCC     	/CLEA/  	
+1196	D8A0	D2 		      	FCB   	'R'+$80        	
+1197	D8A1	E426 		      	FDB   	$E426          	
+1198				
+1199	D8A3	53 54 4F 		      	FCC     	/STO/   	
+1200	D8A6	D0 		      	FCB   	'P'+$80        	
+1201	D8A7	E545 		      	FDB   	$E545          	
+1202				
+1203	D8A9	45 4E 		      	FCC     	/EN/    	
+1204	D8AB	C4 		      	FCB   	'D'+$80        	
+1205	D8AC	E5A3 		      	FDB   	$E5A3          	
+1206				
+1207	D8AE	4C 50 52 49 	      	FCC     	/LPRIN/ 	
+    	    	4E 
+1208	D8B3	D4 		      	FCB   	'T'+$80        	
+1209	D8B4	E756 		      	FDB   	$E756          	
+1210				
+1211	D8B6	4F 50 54 49 	      	FCC     	/OPTIO/ 	
+    	    	4F 
+1212	D8BB	CE 		      	FCB   	'N'+$80        	
+1213	D8BC	EFEA 		      	FDB   	$EFEA          	
 1214				
-1215	D84B	43 4D 4F 44 	      	FCC     	/CMODE/ 	
-    	    	45 
-1216	D850	B0 		      	FCB   	'0'+$80        	
-1217	D851	EFF7 		      	FDB   	$EFF7          	
+1215	D8BE	42 45 45 50 	      	FCC     	/BEEP/  	
+1216	D8C2	B0 		      	FCB   	'0'+$80        	
+1217	D8C3	F021 		      	FDB   	$F021          	
 1218				
-1219	D853	43 4D 4F 44 	      	FCC     	/CMODE/ 	
-    	    	45 
-1220	D858	B1 		      	FCB   	'1'+$80        	
-1221	D859	EFFA 		      	FDB   	$EFFA          	
+1219	D8C5	42 45 45 50 	      	FCC     	/BEEP/  	
+1220	D8C9	B1 		      	FCB   	'1'+$80        	
+1221	D8CA	F000 		      	FDB   	$F000          	
 1222				
-1223	D85B	4F 56 46 		      	FCC     	/OVF/   	
-1224	D85E	B0 		      	FCB   	'0'+$80        	
-1225	D85F	EFF0 		      	FDB   	$EFF0          	
+1223	D8CC	42 45 45 		      	FCC     	/BEE/   	
+1224	D8CF	D0 		      	FCB   	'P'+$80        	
+1225	D8D0	F018 		      	FDB   	$F018          	
 1226				
-1227	D861	4F 56 46 		      	FCC     	/OVF/   	
-1228	D864	B1 		      	FCB   	'1'+$80        	
-1229	D865	EFF3 		      	FDB   	$EFF3          	
+1227	D8D2	48 43 4F 50 	      	FCC     	/HCOP/  	
+1228	D8D6	D9 		      	FCB   	'Y'+$80        	
+1229	D8D7	E504 		      	FDB   	$E504          	
 1230				
-1231	D867	FF 		      	FCB   	$FF            	
-1232	D868	EAFD 		      	FDB   	$EAFD          	
-1233				
-1234				;------------------ MEMORY EDIT ----------------------------
-1235	DD00			      	ORG   	$DD00          	
-1236				
-1237	DD00	DF E4		      	STX   	ADRS           	
-1238	DD02	96 E4		ME8   	LDAA  	ADRS           	
-1239	DD04	BD D40F		      	JSR   	PRHEX          	
-1240	DD07	96 E5		      	LDAA  	ADRS+1         	
-1241	DD09	BD D40F		      	JSR   	PRHEX          	
-1242	DD0C	BD F3BA		      	JSR   	SPC            	
-1243				
-1244	DD0F	8D 2B		ME0   	BSR   	ME1            	
-1245	DD11	25 4F		      	BCS   	ME6            	
-1246	DD13	16		      	TAB   			
-1247	DD14	58		      	ASLB  			
-1248	DD15	58		      	ASLB  			
-1249	DD16	58		      	ASLB  			
-1250	DD17	58		      	ASLB  			;Bレジスタに送って16倍
-1251	DD18	37		      	PSHB  			
-1252	DD19	8D 21		      	BSR   	ME1            	
-1253	DD1B	33		      	PULB  			
-1254	DD1C	25 44		      	BCS   	ME6            	
-1255	DD1E	1B		      	ABA   			
-1256	DD1F	A7 00		      	STAA  	X              	
-1257	DD21	08		      	INX   			
-1258	DD22	DF E4		      	STX   	ADRS           	
-1259	DD24	96 E5		      	LDAA  	ADRS+1         	
-1260	DD26	84 07		      	ANDA  	#$07           	;次のアドレスが$xxx0又は$xxx8のなら改行してアドレス表示へ
-1261	DD28	4D		      	TSTA  			
-1262	DD29	27 07		      	BEQ   	ME7            	
-1263	DD2B	BD F3BA		      	JSR   	SPC            	;次のアドレスが$xxx0又は$xxx8でないなら空白1文字表示
-1264	DD2E	DE E4		      	LDX   	ADRS           	
-1265	DD30	20 DD		      	BRA   	ME0            	
-1266	DD32	CE D5E0		ME7   	LDX   	#CRLF          	
-1267	DD35	BD D402		      	JSR   	STRPRN         	;改行
-1268	DD38	DE E4		      	LDX   	ADRS           	
-1269	DD3A	20 C6		      	BRA   	ME8            	
-1270				
-1271	DD3C	BD E4F2		ME1   	JSR   	INPUT          	
-1272	DD3F	81 30		      	CMPA  	#$30           	
-1273	DD41	25 0C		      	BCS   	ME2            	
-1274	DD43	81 3A		      	CMPA  	#$3A           	
-1275	DD45	25 13		      	BCS   	ME3            	
-1276	DD47	81 41		      	CMPA  	#$41           	
-1277	DD49	25 04		      	BCS   	ME2            	
-1278	DD4B	81 47		      	CMPA  	#$47           	
-1279	DD4D	25 0E		      	BCS   	ME4            	
-1280	DD4F	81 0D		ME2   	CMPA  	#$0D           	
-1281	DD51	27 0D		      	BEQ   	ME5            	
-1282	DD53	86 08		      	LDAA  	#$08           	
-1283	DD55	BD F3BC		      	JSR   	PRINT          	
-1284	DD58	20 E2		      	BRA   	ME1            	
-1285	DD5A	80 30		ME3   	SUBA  	#$30           	
-1286	DD5C	39		      	RTS   			
-1287	DD5D	80 37		ME4   	SUBA  	#$37           	
-1288	DD5F	39		      	RTS   			
-1289	DD60	0D		ME5   	SEC   			
-1290	DD61	39		      	RTS   			
-1291	DD62	39		ME6   	RTS   			
-1292				
-1293				;------------------ MEMORY DUMP USR関数第2パラメータ(Xレジスタ)のアドレスからダンプ -----------------
-1294	DE00			      	ORG   	$DE00          	
-1295				
-1296	DE00	DF E4		      	STX   	ADRS           	;16進コード表示用カウンタ
-1297	DE02	DF E6		      	STX   	LENG           	;ASCIIコード表示用カウンタ
-1298				
-1299	DE04	C6 08		DPS   	LDAB  	#$08           	;8行を表示
-1300	DE06	37		DP0   	PSHB  			
-1301	DE07	DE E4		      	LDX   	ADRS           	
-1302	DE09	96 E4		      	LDAA  	ADRS           	;アドレスを表示
-1303	DE0B	BD D40F		      	JSR   	PRHEX          	
-1304	DE0E	96 E5		      	LDAA  	ADRS+1         	
-1305	DE10	BD D40F		      	JSR   	PRHEX          	
-1306	DE13	BD F3BA		      	JSR   	SPC            	;空白表示
-1307				
-1308	DE16	C6 08		      	LDAB  	#$08           	;8Byte分を1行表示
-1309	DE18	A6 00		DP1   	LDAA  	X              	
-1310	DE1A	BD D40F		      	JSR   	PRHEX          	;Aレジスタを16進2桁で表示
-1311	DE1D	08		      	INX   			
-1312	DE1E	5A		      	DECB  			
-1313	DE1F	26 F7		      	BNE   	DP1            	;ループ
-1314	DE21	DF E4		      	STX   	ADRS           	;1行分最終アドレスを退避
-1315				
-1316	DE23	BD F3BA		      	JSR   	SPC            	;空白表示
-1317				
-1318	DE26	DE E6		      	LDX   	LENG           	
-1319	DE28	C6 08		      	LDAB  	#$08           	;8Byte分
-1320	DE2A	A6 00		DP2   	LDAA  	X              	
-1321	DE2C	81 20		      	CMPA  	#$20           	;$20以下なら'.'($2E)に置き換え
-1322	DE2E	24 02		      	BCC   	DP3            	
-1323	DE30	86 2E		      	LDAA  	#$2E           	
-1324	DE32	BD F3BC		DP3   	JSR   	PRINT          	
-1325	DE35	08		      	INX   			
-1326	DE36	5A		      	DECB  			
-1327	DE37	26 F1		      	BNE   	DP2            	
-1328	DE39	DF E6		      	STX   	LENG           	;1行分最終アドレスを退避
-1329				
-1330	DE3B	CE D5E0		      	LDX   	#CRLF          	
-1331	DE3E	BD D402		      	JSR   	STRPRN         	;改行
-1332	DE41	33		      	PULB  			
-1333	DE42	5A		      	DECB  			
-1334	DE43	26 C1		      	BNE   	DP0            	;ループ
-1335				
-1336	DE45	CE DE71		      	LDX   	#DPMES         	;継続指示メッセージ
-1337	DE48	BD D402		      	JSR   	STRPRN         	
-1338	DE4B	BD D45E		DP4   	JSR   	KSCN2          	;キー入力待ち
-1339	DE4E	4D		      	TSTA  			
-1340	DE4F	27 FA		      	BEQ   	DP4            	
-1341	DE51	81 20		      	CMPA  	#' '           	;スペースなら次ページ
-1342	DE53	27 AF		      	BEQ   	DPS            	
-1343	DE55	81 4E		      	CMPA  	#'N'           	;'N'なら次ページ
-1344	DE57	27 AB		      	BEQ   	DPS            	
-1345	DE59	81 42		      	CMPA  	#'B'           	;'B'なら前ページ
-1346	DE5B	27 01		      	BEQ   	DP6            	
-1347	DE5D	39		      	RTS   			
-1348				
-1349	DE5E	96 E5		DP6   	LDAA  	ADRS+1         	;'B'キーが押されたら(ADRS) <- (ADRS) - $80を計算して格納
-1350	DE60	80 80		      	SUBA  	#$80           	
-1351	DE62	97 E5		      	STAA  	ADRS+1         	
-1352	DE64	97 E7		      	STAA  	LENG+1         	
-1353	DE66	24 07		      	BCC   	DP7            	
-1354	DE68	96 E4		      	LDAA  	ADRS           	
-1355	DE6A	4A		      	DECA  			
-1356	DE6B	97 E4		      	STAA  	ADRS           	
-1357	DE6D	97 E6		      	STAA  	LENG           	
-1358	DE6F	20 93		DP7   	BRA   	DPS            	
+1231	D8D9	4C 4F 41 		      	FCC     	/LOA/   	
+1232	D8DC	C4 		      	FCB   	'D'+$80        	
+1233				;		FDB		$F4EF
+1234	D8DD	D046 		      	FDB   	LOAD           	
+1235				
+1236	D8DF	4D 45 58 45 	      	FCC     	/MEXE/  	
+1237	D8E3	C3 		      	FCB   	'C'+$80        	
+1238				;		FDB		$F4E3
+1239	D8E4	D52D 		      	FDB   	MEXEC          	
+1240				
+1241	D8E6	53 41 56 		      	FCC     	/SAV/   	
+1242	D8E9	C5 		      	FCB   	'E'+$80        	
+1243				;		FDB		$F508
+1244	D8EA	D2DC 		      	FDB   	BSAVE          	
+1245				
+1246	D8EC	4D 53 41 56 	      	FCC     	/MSAVE/ 	
+    	    	45 
+1247	D8F1	A2 		      	FCB   	'"'+$80        	
+1248				;		FDB		$F517
+1249	D8F2	D39E 		      	FDB   	MSAVE          	
+1250				
+1251	D8F4	56 45 52 49 	      	FCC     	/VERIF/ 	
+    	    	46 
+1252	D8F9	D9 		      	FCB   	'Y'+$80        	
+1253	D8FA	F4FC 		      	FDB   	$F4FC          	
+1254				
+1255	D8FC	43 4C 		      	FCC     	/CL/    	
+1256	D8FE	D3 		      	FCB   	'S'+$80        	
+1257	D8FF	F47C 		      	FDB   	$F47C          	
+1258				
+1259	D901	53 44 44 49 	      	FCC     	/SDDI/  	
+1260	D905	D2 		      	FCB   	'R'+$80        	
+1261	D906	D467 		      	FDB   	FILES          	
+1262				
+1263	D908	FF 		      	FCB   	$FF            	
+1264	D909	F26E 		      	FDB   	$F26E          	
+1265				
+1266	D90B	52 4E 44 		      	FCC     	/RND/   	
+1267	D90E	A8 		      	FCB   	'('+$80        	
+1268	D90F	EB2C 		      	FDB   	$EB2C          	
+1269				
+1270	D911	41 42 53 		      	FCC     	/ABS/   	
+1271	D914	A8 		      	FCB   	'('+$80        	
+1272	D915	E95C 		      	FDB   	$E95C          	
+1273				
+1274	D917	4D 4F 44 		      	FCC     	/MOD/   	
+1275	D91A	A8 		      	FCB   	'('+$80        	
+1276	D91B	EB0C 		      	FDB   	$EB0C          	
+1277				
+1278	D91D	41 53 43 		      	FCC     	/ASC/   	
+1279	D920	A8 		      	FCB   	'('+$80        	
+1280	D921	EFB7 		      	FDB   	$EFB7          	
+1281				
+1282	D923	46 52 45 		      	FCC     	/FRE/   	
+1283	D926	A8 		      	FCB   	'('+$80        	
+1284	D927	EF6F 		      	FDB   	$EF6F          	
+1285				
+1286	D929	50 45 45 4B 	      	FCC     	/PEEK/  	
+1287	D92D	A8 		      	FCB   	'('+$80        	
+1288	D92E	EF4D 		      	FDB   	$EF4D          	
+1289				
+1290	D930	53 47 4E 		      	FCC     	/SGN/   	
+1291	D933	A8 		      	FCB   	'('+$80        	
+1292	D934	EF74 		      	FDB   	$EF74          	
+1293				
+1294	D936	4C 45 4E 		      	FCC     	/LEN/   	
+1295	D939	A8 		      	FCB   	'('+$80        	
+1296	D93A	EFAB 		      	FDB   	$EFAB          	
+1297				
+1298	D93C	56 50 4F 53 	      	FCC     	/VPOS/  	
+1299	D940	A8 		      	FCB   	'('+$80        	
+1300	D941	F185 		      	FDB   	$F185          	
+1301				
+1302	D943	48 50 4F 53 	      	FCC     	/HPOS/  	
+1303	D947	A8 		      	FCB   	'('+$80        	
+1304	D948	F175 		      	FDB   	$F175          	
+1305				
+1306	D94A	55 53 52 		      	FCC     	/USR/   	
+1307	D94D	A8 		      	FCB   	'('+$80        	
+1308	D94E	EB41 		      	FDB   	$EB41          	
+1309				
+1310	D950	56 41 4C 		      	FCC     	/VAL/   	
+1311	D953	A8 		      	FCB   	'('+$80        	
+1312	D954	EFBF 		      	FDB   	$EFBF          	
+1313				
+1314	D956	FF 		      	FCB   	$FF            	
+1315	D957	EAA5 		      	FDB   	$EAA5          	
+1316				
+1317	D959	54 		      	FCC     	/T/     	
+1318	D95A	CF 		      	FCB   	'O'+$80        	
+1319	D95B	1234 		      	FDB   	$1234          	
+1320				
+1321	D95D	53 54 45 		      	FCC     	/STE/   	
+1322	D960	D0 		      	FCB   	'P'+$80        	
+1323	D961	ABCD 		      	FDB   	$ABCD          	
+1324				
+1325	D963	53 50 43 		      	FCC     	/SPC/   	
+1326	D966	A8 		      	FCB   	'('+$80        	
+1327	D967	EF95 		      	FDB   	$EF95          	
+1328				
+1329	D969	54 41 42 		      	FCC     	/TAB/   	
+1330	D96C	A8 		      	FCB   	'('+$80        	
+1331	D96D	E78F 		      	FDB   	$E78F          	
+1332				
+1333	D96F	46 4C 44 		      	FCC     	/FLD/   	
+1334	D972	A8 		      	FCB   	'('+$80        	
+1335	D973	EFD3 		      	FDB   	$EFD3          	
+1336				
+1337	D975	FF 		      	FCB   	$FF            	
+1338	D976	E7C4 		      	FDB   	$E7C4          	
+1339				
+1340	D978	48 45 58 24 	      	FCC     	/HEX$/  	
+1341	D97C	A8 		      	FCB   	'('+$80        	
+1342	D97D	F147 		      	FDB   	$F147          	
+1343				
+1344	D97F	43 48 52 24 	      	FCC     	/CHR$/  	
+1345	D983	A8 		      	FCB   	'('+$80        	
+1346	D984	F1EC 		      	FDB   	$F1EC          	
+1347				
+1348	D986	4C 45 46 54 	      	FCC     	/LEFT$/ 	
+    	    	24 
+1349	D98B	A8 		      	FCB   	'('+$80        	
+1350	D98C	EE80 		      	FDB   	$EE80          	
+1351				
+1352	D98E	52 49 47 48 	      	FCC     	/RIGHT$/	
+    	    	54 24 
+1353	D994	A8 		      	FCB   	'('+$80        	
+1354	D995	EE88 		      	FDB   	$EE88          	
+1355				
+1356	D997	4D 49 44 24 	      	FCC     	/MID$/  	
+1357	D99B	A8 		      	FCB   	'('+$80        	
+1358	D99C	EEA2 		      	FDB   	$EEA2          	
 1359				
-1360	DE71			DPMES 				
-1361	DE71	2D 20 4E 45 	      	FCC     	/- NEXT:SPACE BACK:B CANSEL:ANY -/	
+1360	D99E	FF 		      	FCB   	$FF            	
+1361	D99F	EEEF 		      	FDB   	$EEEF          	
+1362				
+1363	D9A1	43 4D 4F 44 	      	FCC     	/CMODE/ 	
+    	    	45 
+1364	D9A6	B0 		      	FCB   	'0'+$80        	
+1365	D9A7	EFF7 		      	FDB   	$EFF7          	
+1366				
+1367	D9A9	43 4D 4F 44 	      	FCC     	/CMODE/ 	
+    	    	45 
+1368	D9AE	B1 		      	FCB   	'1'+$80        	
+1369	D9AF	EFFA 		      	FDB   	$EFFA          	
+1370				
+1371	D9B1	4F 56 46 		      	FCC     	/OVF/   	
+1372	D9B4	B0 		      	FCB   	'0'+$80        	
+1373	D9B5	EFF0 		      	FDB   	$EFF0          	
+1374				
+1375	D9B7	4F 56 46 		      	FCC     	/OVF/   	
+1376	D9BA	B1 		      	FCB   	'1'+$80        	
+1377	D9BB	EFF3 		      	FDB   	$EFF3          	
+1378				
+1379	D9BD	FF 		      	FCB   	$FF            	
+1380	D9BE	EAFD 		      	FDB   	$EAFD          	
+1381				
+1382				;------------------ MEMORY EDIT ----------------------------
+1383	DD00			      	ORG   	$DD00          	
+1384				
+1385	DD00	DF E4		      	STX   	ADRS           	
+1386	DD02	96 E4		ME8   	LDAA  	ADRS           	
+1387	DD04	BD D549		      	JSR   	PRHEX          	
+1388	DD07	96 E5		      	LDAA  	ADRS+1         	
+1389	DD09	BD D549		      	JSR   	PRHEX          	
+1390	DD0C	BD F3BA		      	JSR   	SPC            	
+1391				
+1392	DD0F	8D 2B		ME0   	BSR   	ME1            	
+1393	DD11	25 4F		      	BCS   	ME6            	
+1394	DD13	16		      	TAB   			
+1395	DD14	58		      	ASLB  			
+1396	DD15	58		      	ASLB  			
+1397	DD16	58		      	ASLB  			
+1398	DD17	58		      	ASLB  			;Bレジスタに送って16倍
+1399	DD18	37		      	PSHB  			
+1400	DD19	8D 21		      	BSR   	ME1            	
+1401	DD1B	33		      	PULB  			
+1402	DD1C	25 44		      	BCS   	ME6            	
+1403	DD1E	1B		      	ABA   			
+1404	DD1F	A7 00		      	STAA  	X              	
+1405	DD21	08		      	INX   			
+1406	DD22	DF E4		      	STX   	ADRS           	
+1407	DD24	96 E5		      	LDAA  	ADRS+1         	
+1408	DD26	84 07		      	ANDA  	#$07           	;次のアドレスが$xxx0又は$xxx8のなら改行してアドレス表示へ
+1409	DD28	4D		      	TSTA  			
+1410	DD29	27 07		      	BEQ   	ME7            	
+1411	DD2B	BD F3BA		      	JSR   	SPC            	;次のアドレスが$xxx0又は$xxx8でないなら空白1文字表示
+1412	DD2E	DE E4		      	LDX   	ADRS           	
+1413	DD30	20 DD		      	BRA   	ME0            	
+1414	DD32	CE D71A		ME7   	LDX   	#CRLF          	
+1415	DD35	BD D53C		      	JSR   	STRPRN         	;改行
+1416	DD38	DE E4		      	LDX   	ADRS           	
+1417	DD3A	20 C6		      	BRA   	ME8            	
+1418				
+1419	DD3C	BD E4F2		ME1   	JSR   	INPUT          	
+1420	DD3F	81 30		      	CMPA  	#$30           	
+1421	DD41	25 0C		      	BCS   	ME2            	
+1422	DD43	81 3A		      	CMPA  	#$3A           	
+1423	DD45	25 13		      	BCS   	ME3            	
+1424	DD47	81 41		      	CMPA  	#$41           	
+1425	DD49	25 04		      	BCS   	ME2            	
+1426	DD4B	81 47		      	CMPA  	#$47           	
+1427	DD4D	25 0E		      	BCS   	ME4            	
+1428	DD4F	81 0D		ME2   	CMPA  	#$0D           	
+1429	DD51	27 0D		      	BEQ   	ME5            	
+1430	DD53	86 08		      	LDAA  	#$08           	
+1431	DD55	BD F3BC		      	JSR   	PRINT          	
+1432	DD58	20 E2		      	BRA   	ME1            	
+1433	DD5A	80 30		ME3   	SUBA  	#$30           	
+1434	DD5C	39		      	RTS   			
+1435	DD5D	80 37		ME4   	SUBA  	#$37           	
+1436	DD5F	39		      	RTS   			
+1437	DD60	0D		ME5   	SEC   			
+1438	DD61	39		      	RTS   			
+1439	DD62	39		ME6   	RTS   			
+1440				
+1441				;------------------ MEMORY DUMP USR関数第2パラメータ(Xレジスタ)のアドレスからダンプ -----------------
+1442	DE00			      	ORG   	$DE00          	
+1443				
+1444	DE00	DF E4		      	STX   	ADRS           	;16進コード表示用カウンタ
+1445	DE02	DF E6		      	STX   	LENG           	;ASCIIコード表示用カウンタ
+1446				
+1447	DE04	C6 08		DPS   	LDAB  	#$08           	;8行を表示
+1448	DE06	37		DP0   	PSHB  			
+1449	DE07	DE E4		      	LDX   	ADRS           	
+1450	DE09	96 E4		      	LDAA  	ADRS           	;アドレスを表示
+1451	DE0B	BD D549		      	JSR   	PRHEX          	
+1452	DE0E	96 E5		      	LDAA  	ADRS+1         	
+1453	DE10	BD D549		      	JSR   	PRHEX          	
+1454	DE13	BD F3BA		      	JSR   	SPC            	;空白表示
+1455				
+1456	DE16	C6 08		      	LDAB  	#$08           	;8Byte分を1行表示
+1457	DE18	A6 00		DP1   	LDAA  	X              	
+1458	DE1A	BD D549		      	JSR   	PRHEX          	;Aレジスタを16進2桁で表示
+1459	DE1D	08		      	INX   			
+1460	DE1E	5A		      	DECB  			
+1461	DE1F	26 F7		      	BNE   	DP1            	;ループ
+1462	DE21	DF E4		      	STX   	ADRS           	;1行分最終アドレスを退避
+1463				
+1464	DE23	BD F3BA		      	JSR   	SPC            	;空白表示
+1465				
+1466	DE26	DE E6		      	LDX   	LENG           	
+1467	DE28	C6 08		      	LDAB  	#$08           	;8Byte分
+1468	DE2A	A6 00		DP2   	LDAA  	X              	
+1469	DE2C	81 20		      	CMPA  	#$20           	;$20以下なら'.'($2E)に置き換え
+1470	DE2E	24 02		      	BCC   	DP3            	
+1471	DE30	86 2E		      	LDAA  	#$2E           	
+1472	DE32	BD F3BC		DP3   	JSR   	PRINT          	
+1473	DE35	08		      	INX   			
+1474	DE36	5A		      	DECB  			
+1475	DE37	26 F1		      	BNE   	DP2            	
+1476	DE39	DF E6		      	STX   	LENG           	;1行分最終アドレスを退避
+1477				
+1478	DE3B	CE D71A		      	LDX   	#CRLF          	
+1479	DE3E	BD D53C		      	JSR   	STRPRN         	;改行
+1480	DE41	33		      	PULB  			
+1481	DE42	5A		      	DECB  			
+1482	DE43	26 C1		      	BNE   	DP0            	;ループ
+1483				
+1484	DE45	CE DE71		      	LDX   	#DPMES         	;継続指示メッセージ
+1485	DE48	BD D53C		      	JSR   	STRPRN         	
+1486	DE4B	BD D598		DP4   	JSR   	KSCN2          	;キー入力待ち
+1487	DE4E	4D		      	TSTA  			
+1488	DE4F	27 FA		      	BEQ   	DP4            	
+1489	DE51	81 20		      	CMPA  	#' '           	;スペースなら次ページ
+1490	DE53	27 AF		      	BEQ   	DPS            	
+1491	DE55	81 4E		      	CMPA  	#'N'           	;'N'なら次ページ
+1492	DE57	27 AB		      	BEQ   	DPS            	
+1493	DE59	81 42		      	CMPA  	#'B'           	;'B'なら前ページ
+1494	DE5B	27 01		      	BEQ   	DP6            	
+1495	DE5D	39		      	RTS   			
+1496				
+1497	DE5E	96 E5		DP6   	LDAA  	ADRS+1         	;'B'キーが押されたら(ADRS) <- (ADRS) - $80を計算して格納
+1498	DE60	80 80		      	SUBA  	#$80           	
+1499	DE62	97 E5		      	STAA  	ADRS+1         	
+1500	DE64	97 E7		      	STAA  	LENG+1         	
+1501	DE66	24 07		      	BCC   	DP7            	
+1502	DE68	96 E4		      	LDAA  	ADRS           	
+1503	DE6A	4A		      	DECA  			
+1504	DE6B	97 E4		      	STAA  	ADRS           	
+1505	DE6D	97 E6		      	STAA  	LENG           	
+1506	DE6F	20 93		DP7   	BRA   	DPS            	
+1507				
+1508	DE71			DPMES 				
+1509	DE71	2D 20 4E 45 	      	FCC     	/- NEXT:SPACE BACK:B CANSEL:ANY -/	
     	    	58 54 3A 53 
     	    	50 41 43 45 
     	    	20 42 41 43 
@@ -1424,108 +1578,111 @@
     	    	43 41 4E 53 
     	    	45 4C 3A 41 
     	    	4E 59 20 2D 
-1362	DE91	0D 0A 00 		      	FCB   	$0D,$0A,$00    	
-1363				
-1364				;------------------ MEMORY TEST ----------------------------
-1365	DF00			      	ORG   	$DF00          	
-1366				
-1367	DF00	DE 04		      	LDX   	BSTA           	;テスト開始アドレス
-1368	DF02	DF E4		      	STX   	ADRS           	
-1369				
-1370	DF04	CE D5E0		MEM1  	LDX   	#CRLF          	
-1371	DF07	BD D402		      	JSR   	STRPRN         	
-1372				
-1373	DF0A	96 E4		      	LDAA  	ADRS           	;アドレスを表示
-1374	DF0C	BD D40F		      	JSR   	PRHEX          	
-1375	DF0F	96 E5		      	LDAA  	ADRS+1         	
-1376	DF11	BD D40F		      	JSR   	PRHEX          	
-1377				
-1378	DF14	BD F3BA		      	JSR   	SPC            	
-1379				
-1380	DF17	DE E4		      	LDX   	ADRS           	
-1381	DF19	86 55		      	LDAA  	#$55           	;$55を書き込み
-1382	DF1B	A7 00		      	STAA  	X              	
-1383				
-1384	DF1D	BD D40F		      	JSR   	PRHEX          	
-1385	DF20	BD F3BA		      	JSR   	SPC            	
-1386				
-1387	DF23	A6 00		      	LDAA  	X              	;読み出し
-1388	DF25	16		      	TAB   			
-1389	DF26	BD D40F		      	JSR   	PRHEX          	
-1390	DF29	17		      	TBA   			
-1391				
-1392	DF2A	81 55		      	CMPA  	#$55           	;読出しが$55でなければエラー
-1393	DF2C	26 1D		      	BNE   	MSTP           	
-1394				
-1395	DF2E	BD F3BA		      	JSR   	SPC            	
-1396				
-1397	DF31	86 AA		      	LDAA  	#$AA           	;$AAを書き込み
-1398	DF33	A7 00		      	STAA  	X              	
-1399				
-1400	DF35	BD D40F		      	JSR   	PRHEX          	
-1401	DF38	BD F3BA		      	JSR   	SPC            	
-1402				
-1403	DF3B	A6 00		      	LDAA  	X              	;読出し
-1404	DF3D	16		      	TAB   			
-1405	DF3E	BD D40F		      	JSR   	PRHEX          	
-1406	DF41	17		      	TBA   			
-1407				
-1408	DF42	81 AA		      	CMPA  	#$AA           	;読出しが$AAでなければエラー
-1409	DF44	26 05		      	BNE   	MSTP           	
-1410	DF46	08		      	INX   			
-1411	DF47	DF E4		      	STX   	ADRS           	
-1412	DF49	20 B9		      	BRA   	MEM1           	;ループ
-1413				
-1414	DF4B	CE DF52		MSTP  	LDX   	#MEMSTP        	;STOPメッセージ
-1415	DF4E	BD D402		      	JSR   	STRPRN         	
-1416	DF51	39		      	RTS   			
-1417				
-1418	DF52			MEMSTP				
-1419	DF52	0D 0A 		      	FCB   	$0D,$0A        	
-1420	DF54	4D 45 4D 4F 	      	FCC     	/MEMORY TEST STOP!/	
+1510	DE91	0D 0A 00 		      	FCB   	$0D,$0A,$00    	
+1511				
+1512				;------------------ MEMORY TEST ----------------------------
+1513	DF00			      	ORG   	$DF00          	
+1514				
+1515	DF00	DE 04		      	LDX   	BSTA           	;テスト開始アドレス
+1516	DF02	DF E4		      	STX   	ADRS           	
+1517				
+1518	DF04	CE D71A		MEM1  	LDX   	#CRLF          	
+1519	DF07	BD D53C		      	JSR   	STRPRN         	
+1520				
+1521	DF0A	96 E4		      	LDAA  	ADRS           	;アドレスを表示
+1522	DF0C	BD D549		      	JSR   	PRHEX          	
+1523	DF0F	96 E5		      	LDAA  	ADRS+1         	
+1524	DF11	BD D549		      	JSR   	PRHEX          	
+1525				
+1526	DF14	BD F3BA		      	JSR   	SPC            	
+1527				
+1528	DF17	DE E4		      	LDX   	ADRS           	
+1529	DF19	86 55		      	LDAA  	#$55           	;$55を書き込み
+1530	DF1B	A7 00		      	STAA  	X              	
+1531				
+1532	DF1D	BD D549		      	JSR   	PRHEX          	
+1533	DF20	BD F3BA		      	JSR   	SPC            	
+1534				
+1535	DF23	A6 00		      	LDAA  	X              	;読み出し
+1536	DF25	16		      	TAB   			
+1537	DF26	BD D549		      	JSR   	PRHEX          	
+1538	DF29	17		      	TBA   			
+1539				
+1540	DF2A	81 55		      	CMPA  	#$55           	;読出しが$55でなければエラー
+1541	DF2C	26 1D		      	BNE   	MSTP           	
+1542				
+1543	DF2E	BD F3BA		      	JSR   	SPC            	
+1544				
+1545	DF31	86 AA		      	LDAA  	#$AA           	;$AAを書き込み
+1546	DF33	A7 00		      	STAA  	X              	
+1547				
+1548	DF35	BD D549		      	JSR   	PRHEX          	
+1549	DF38	BD F3BA		      	JSR   	SPC            	
+1550				
+1551	DF3B	A6 00		      	LDAA  	X              	;読出し
+1552	DF3D	16		      	TAB   			
+1553	DF3E	BD D549		      	JSR   	PRHEX          	
+1554	DF41	17		      	TBA   			
+1555				
+1556	DF42	81 AA		      	CMPA  	#$AA           	;読出しが$AAでなければエラー
+1557	DF44	26 05		      	BNE   	MSTP           	
+1558	DF46	08		      	INX   			
+1559	DF47	DF E4		      	STX   	ADRS           	
+1560	DF49	20 B9		      	BRA   	MEM1           	;ループ
+1561				
+1562	DF4B	CE DF52		MSTP  	LDX   	#MEMSTP        	;STOPメッセージ
+1563	DF4E	BD D53C		      	JSR   	STRPRN         	
+1564	DF51	39		      	RTS   			
+1565				
+1566	DF52			MEMSTP				
+1567	DF52	0D 0A 		      	FCB   	$0D,$0A        	
+1568	DF54	4D 45 4D 4F 	      	FCC     	/MEMORY TEST STOP!/	
     	    	52 59 20 54 
     	    	45 53 54 20 
     	    	53 54 4F 50 
     	    	21 
-1421	DF65	0D 0A 00 		      	FCB   	$0D,$0A,$00    	
-1422				
-1423					END   	               	
+1569	DF65	0D 0A 00 		      	FCB   	$0D,$0A,$00    	
+1570				
+1571					END   	               	
 
 0 error(s),  0 warning(s) is detected.
 
 Label	address
-ADRS  	00E4	ADRS2 	00F2	ADRSK 	00EC	AZ1   	D401	AZLCNV	D3F7
-BDSEND	D252	BEEP  	F018	BEND  	0006	BNMSG 	D5C1	BSAVE 	D1A2
-BSMSG 	D5B8	BSTA  	0004	BSV1  	D1B1	BSV10 	D1BD	BSV2  	D1D2
-BTBL  	D6A6	BTPNT 	001A	CMTMSG	D5AE	CRLF  	D5E0	CTBL  	D6D7
-CTPNT 	001C	DL1   	D360	DL2   	D363	DL3   	D37D	DL33  	D391
-DL4   	D393	DL5   	D3BF	DL6   	D3C9	DL61  	D3E0	DL7   	D3E7
-DL8   	D3E9	DL9   	D399	DL91  	D39C	DP0   	DE06	DP1   	DE18
+ADRS  	00E4	ADRS2 	00F2	ADRSK 	00EC	AZ1   	D53B	AZLCNV	D531
+BDSEND	D38C	BEEP  	F018	BEND  	0006	BNMSG 	D6FB	BSAVE 	D2DC
+BSMSG 	D6F2	BSTA  	0004	BSV1  	D2EB	BSV10 	D2F7	BSV2  	D30C
+BTBL  	D7FC	BTPNT 	001A	CMTMSG	D6E8	CRLF  	D71A	CTBL  	D82D
+CTPNT 	001C	DL1   	D49A	DL2   	D49D	DL3   	D4B7	DL33  	D4CB
+DL4   	D4CD	DL5   	D4F9	DL6   	D503	DL61  	D51A	DL7   	D521
+DL8   	D523	DL9   	D4D3	DL91  	D4D6	DP0   	DE06	DP1   	DE18
 DP2   	DE2A	DP3   	DE32	DP4   	DE4B	DP6   	DE5E	DP7   	DE6F
-DPMES 	DE71	DPS   	DE04	DUMMY 	D045	ERR   	D179	ERR1  	D184
-ERR3  	D18D	ERR99 	D196	ERRJ  	D092	ERRJ2 	D1CF	ERRJ3 	D297
-ERRJ4 	D31C	ERRJ5 	D32A	ERRJ6 	D3F0	ERRR  	D19C	F1CHK 	D654
-F2CHK 	D65C	FILES 	D32D	FLG   	00E3	FN0   	D051	FN1   	D053
-FN10  	D06D	FN11  	D071	FN12  	D07C	FN13  	D07D	FN14  	D08A
-FN2   	D095	FNS3  	D211	FNS4  	D22A	FNS5  	D231	FNS6  	D23E
-FNS7  	D24E	FNSEND	D20E	FNSIZ 	00F0	HEND  	0008	INI2  	D030
-INI3  	D03F	INIT  	D016	INPUT 	E4F2	KBUF  	0030	KEYDAT	C800
-KEYSEL	C801	KSC0  	D464	KSC1  	D477	KSC10 	D4F4	KSC11 	D4F8
-KSC12 	D4FC	KSC13 	D500	KSC14 	D504	KSC15 	D4B3	KSC2  	D49D
-KSC3  	D4A1	KSC4  	D4A9	KSC5  	D4AD	KSC6  	D4B1	KSC7  	D4B6
-KSC8  	D4BB	KSC9  	D4CE	KSCAN 	F7A9	KSCN2 	D45E	KTBL  	D508
-KTBL2 	D550	LD1   	D0BD	LD2   	D0FD	LD3   	D103	LDMSG 	D5CB
-LENG  	00E6	LOAD  	D046	LOP1  	D152	LOP2  	D176	ME0   	DD0F
-ME1   	DD3C	ME2   	DD4F	ME3   	DD5A	ME4   	DD5D	ME5   	DD60
-ME6   	DD62	ME7   	DD32	ME8   	DD02	MEM1  	DF04	MEMSTP	DF52
-MEXEC 	D3F3	MSAVE 	D264	MSG99 	D61B	MSG_AD	D624	MSG_F0	D5E3
-MSG_F1	D5FE	MSG_F3	D60E	MSGKEY	D634	MSTP  	DF4B	MSV1  	D273
-MSV10 	D285	MSV2  	D284	MSV3  	D29A	MSV4  	D29C	MSV5  	D2AC
-MSV6  	D2B3	MSV8  	D2C8	MSV9  	D2CF	PH2   	D426	PH3   	D428
-PIOA  	CC10	PIOB  	CC11	PIOC  	CC12	PIOINI	D699	PIOR  	CC13
-PRHEX 	D40F	PRHX1 	D41E	PRINT 	F3BC	RCVBYTE	D664	SDIR99	D3EF
-SDIR_PRG	D32D	SDMSG 	D598	SDR1  	D33C	SDR10 	D34E	SDR2  	D34D
-SEND  	000C	SH1   	D453	SH2   	D457	SH21  	D440	SH3   	D45B
-SH4   	D45D	SHEX  	D441	SHEX2 	D42C	SND4BIT	D687	SNDBYTE	D678
-SP1   	D40E	SPC   	F3BA	START 	D001	STRPRN	D402	SVMSG 	D5D4
-V2END 	000A	XSAVE 	00E8	XSAVE2	00EA	XSAVEK	00EE	
+DPMES 	DE71	DPS   	DE04	DUMMY 	D045	ERR   	D2AA	ERR1  	D2B5
+ERR3  	D2BE	ERR4  	D2C7	ERR99 	D2D0	ERRJ  	D092	ERRJ2 	D309
+ERRJ3 	D3D1	ERRJ4 	D456	ERRJ5 	D464	ERRJ6 	D52A	ERRR  	D2D6
+ERRV  	D195	ERRV2 	D20E	F1CHK 	D7AA	F2CHK 	D7B2	FILES 	D467
+FLG   	00E3	FN0   	D051	FN1   	D053	FN10  	D06D	FN11  	D071
+FN12  	D07C	FN13  	D07D	FN14  	D08A	FN2   	D095	FNS3  	D34B
+FNS4  	D364	FNS5  	D36B	FNS6  	D378	FNS7  	D388	FNSEND	D348
+HEND  	0008	INI2  	D030	INI3  	D03F	INIT  	D016	INPUT 	E4F2
+KBUF  	0030	KEYDAT	C800	KEYSEL	C801	KSC0  	D59E	KSC1  	D5B1
+KSC10 	D62E	KSC11 	D632	KSC12 	D636	KSC13 	D63A	KSC14 	D63E
+KSC15 	D5ED	KSC2  	D5D7	KSC3  	D5DB	KSC4  	D5E3	KSC5  	D5E7
+KSC6  	D5EB	KSC7  	D5F0	KSC8  	D5F5	KSC9  	D608	KSCAN 	F7A9
+KSCN2 	D598	KTBL  	D642	KTBL2 	D68A	LD1   	D0CD	LD2   	D119
+LD3   	D15F	LDMSG 	D705	LENG  	00E6	LOAD  	D046	LOP1  	D16E
+LOP2  	D192	LV1   	D1CB	LV2   	D25B	LV3   	D2A1	LV5   	D232
+LVBAS 	D213	LVBIN 	D1E8	ME0   	DD0F	ME1   	DD3C	ME2   	DD4F
+ME3   	DD5A	ME4   	DD5D	ME5   	DD60	ME6   	DD62	ME7   	DD32
+ME8   	DD02	MEM1  	DF04	MEMSTP	DF52	MEXEC 	D52D	MSAVE 	D39E
+MSG99 	D771	MSG_AD	D77A	MSG_F0	D71D	MSG_F1	D738	MSG_F3	D748
+MSG_F4	D755	MSGKEY	D78A	MSTP  	DF4B	MSV1  	D3AD	MSV10 	D3BF
+MSV2  	D3BE	MSV3  	D3D4	MSV4  	D3D6	MSV5  	D3E6	MSV6  	D3ED
+MSV8  	D402	MSV9  	D409	PH2   	D560	PH3   	D562	PIOA  	CC10
+PIOB  	CC11	PIOC  	CC12	PIOINI	D7EF	PIOR  	CC13	PRGVER	00F0
+PRHEX 	D549	PRHX1 	D558	PRINT 	F3BC	RCVBYTE	D7BA	SDIR99	D529
+SDIR_PRG	D467	SDMSG 	D6D2	SDR1  	D476	SDR10 	D488	SDR2  	D487
+SEND  	000C	SH1   	D58D	SH2   	D591	SH21  	D57A	SH3   	D595
+SH4   	D597	SHEX  	D57B	SHEX2 	D566	SND4BIT	D7DD	SNDBYTE	D7CE
+SP1   	D548	SPC   	F3BA	START 	D001	STRPRN	D53C	SVMSG 	D70E
+V2END 	000A	VER1  	D0B4	VER2  	D0B1	VER21 	D19A	XSAVE 	00E8
+XSAVE2	00EA	XSAVEK	00EE	

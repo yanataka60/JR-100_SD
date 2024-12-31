@@ -19,7 +19,7 @@ XSAVE	EQU		$00E8			;Xレジスタ保存
 XSAVE2	EQU		$00EA			;Xレジスタ保存
 ADRSK	EQU		$00EC			;KSCN2 KTBL算出用/SD読込用 終了アドレス計算用
 XSAVEK	EQU		$00EE			;KSCN2用 Xレジスタ保存
-FNSIZ	EQU		$00F0			;ファイルネーム文字数
+PRGVER	EQU		$00F0			;PROG形式バージョン
 ADRS2	EQU		$00F2			;SD読込用 開始アドレス退避
 
 KEYDAT	EQU		$C800			;キーデータ取得
@@ -137,10 +137,19 @@ FN2		JSR		RCVBYTE			;'P'
 		JSR		RCVBYTE			;'R'
 		JSR		RCVBYTE			;'O'
 		JSR		RCVBYTE			;'G'
-		JSR		RCVBYTE			;#$01 フォーマットバージョン
-		JSR		RCVBYTE			;#$00
-		JSR		RCVBYTE			;#$00
-		JSR		RCVBYTE			;#$00
+		JSR		RCVBYTE			;フォーマットバージョン受信
+		CMPA	#$01
+		BEQ		VER1			;フォーマットバージョン1
+		CMPA	#$02
+		BEQ		VER2			;フォーマットバージョン2
+		LDAA	#$F4
+		JMP		ERRJ			;フォーマットバージョンエラー
+
+VER2	JMP		VER21
+;------------------------- PROGフォーマットバージョン1形式LOAD ---------------------
+VER1	JSR		RCVBYTE			;SKIP フォーマットバージョン 2nd Byte
+		JSR		RCVBYTE			;SKIP フォーマットバージョン 3rd Byte
+		JSR		RCVBYTE			;SKIP フォーマットバージョン 4th Byte
 		JSR		RCVBYTE			;FNAME_SIZE 1stByte
 		TAB
 		JSR		RCVBYTE			;SKIP FNAME_SIZE 2ndByte
@@ -178,10 +187,14 @@ LD1		JSR		RCVBYTE			;FNAME
 		BNE		LD2
 		LDX		#BSMSG			;BASICプログラムLOAD表示
 		JSR		STRPRN
+		LDX		#LDMSG			;'LOADING '
+		JSR		STRPRN
+		LDX		#KBUF			;ファイル名
+		JSR		STRPRN
 		BRA		LD3
 LD2		LDX		#BNMSG			;マシン語LOAD表示
 		JSR		STRPRN
-LD3		LDX		#LDMSG			;'LOADING '
+		LDX		#LDMSG			;'LOADING '
 		JSR		STRPRN
 		LDX		#KBUF			;ファイル名
 		JSR		STRPRN
@@ -211,13 +224,14 @@ LD3		LDX		#LDMSG			;'LOADING '
 		JSR		PRHEX
 		LDAA	#')'
 		JSR		PRINT
-		LDX		#CRLF			;CRLF
+LD3		LDX		#CRLF			;CRLF
 		JSR		STRPRN
 
 		JSR		RCVBYTE			;SKIP 2ndByte
 		JSR		RCVBYTE			;SKIP 3rdByte
 		JSR		RCVBYTE			;SKIP 4thByte
 
+;------------------- 実データ受信 --------------------------------
 LOP1	LDX		ADRS
 		JSR		RCVBYTE			;1Byte受信
 		STAA	X				;(X) <- A
@@ -246,6 +260,132 @@ LOP1	LDX		ADRS
 LOP2	LDX		XSAVE			;コマンド文字列終了位置を復帰
 		RTS
 
+ERRV	LDAA	#$F4
+		JMP		ERRJ
+
+;------------------------- PROGフォーマットバージョン2形式LOAD ---------------------
+VER21	JSR		RCVBYTE			;SKIP フォーマットバージョン 2nd Byte
+		JSR		RCVBYTE			;SKIP フォーマットバージョン 3rd Byte
+		JSR		RCVBYTE			;SKIP フォーマットバージョン 4th Byte
+		JSR		RCVBYTE			;'P'
+		JSR		RCVBYTE			;'N'
+		JSR		RCVBYTE			;'A'
+		JSR		RCVBYTE			;'M'
+		JSR		RCVBYTE			;セクションSIZE 1stByte
+		JSR		RCVBYTE			;セクションSIZE 2ndByte
+		JSR		RCVBYTE			;セクションSIZE 3rdByte
+		JSR		RCVBYTE			;セクションSIZE 4thByte
+
+		JSR		RCVBYTE			;FNAME_SIZE 1stByte
+		TAB
+		JSR		RCVBYTE			;SKIP FNAME_SIZE 2ndByte
+		JSR		RCVBYTE			;SKIP FNAME_SIZE 3rdByte
+		JSR		RCVBYTE			;SKIP FNAME_SIZE 4thByte
+		LDX		#KBUF			;SDから送られてきたファイル名を格納
+LV1		JSR		RCVBYTE			;FNAME
+		STAA	X
+		INX
+		DECB
+		BNE		LV1
+		CLRA
+		STAA	X				;ファイル名の最後に$00を追加
+		
+		JSR		RCVBYTE			;SKIP 'P'
+		JSR		RCVBYTE			;SKIP 'B'
+		JSR		RCVBYTE			;'I' or 'A'
+		TAB
+		JSR		RCVBYTE			;SKIP 'N' or 'S'
+		CMPB	#'I'
+		BNE		LVBAS
+;------------ PROGフォーマットバージョン2形式 BINARY LOAD ---------------------
+LVBIN	LDAA	#$01
+		STAA	FLG
+		JSR		RCVBYTE			;セクションSIZE 1stByte
+		JSR		RCVBYTE			;セクションSIZE 2ndByte
+		JSR		RCVBYTE			;セクションSIZE 3rdByte
+		JSR		RCVBYTE			;セクションSIZE 4thByte
+		JSR		RCVBYTE			;読み込みアドレス 1stByte
+		STAA	ADRS+1
+		STAA	ADRS2+1
+		JSR		RCVBYTE			;読み込みアドレス 2ndByte
+		STAA	ADRS
+		STAA	ADRS2
+		JSR		RCVBYTE			;SKIP 3rdByte
+		JSR		RCVBYTE			;SKIP 4thByte
+		BRA		LV5
+
+ERRV2	LDAA	#$F4
+		JMP		ERRJ
+
+;------------ PROGフォーマットバージョン2形式 BASIC LOAD ---------------------
+LVBAS	CMPB	#'A'
+		BNE		ERRV2
+		CLRA
+		STAA	FLG
+		JSR		RCVBYTE			;セクションSIZE 1stByte
+		JSR		RCVBYTE			;セクションSIZE 2ndByte
+		JSR		RCVBYTE			;セクションSIZE 3rdByte
+		JSR		RCVBYTE			;セクションSIZE 4thByte
+		LDAA	#$02			;BASICなら読込開始アドレスは$0246固定
+		STAA	ADRS+1
+		STAA	ADRS2+1
+		LDAA	#$46
+		STAA	ADRS
+		STAA	ADRS2
+		
+LV5		JSR		RCVBYTE			;読み込みByte数1st受信
+		STAA	LENG+1
+		JSR		RCVBYTE			;読み込みByte数2nd受信
+		STAA	LENG
+		JSR		RCVBYTE			;SKIP 3rd
+		JSR		RCVBYTE			;SKIP 4th
+		
+		LDAA	FLG
+		TSTA
+		BNE		LV2
+		LDX		#BSMSG			;BASICプログラムLOAD表示
+		JSR		STRPRN
+		LDX		#LDMSG			;'LOADING '
+		JSR		STRPRN
+		LDX		#KBUF			;ファイル名
+		JSR		STRPRN
+		BRA		LV3
+LV2		LDX		#BNMSG			;マシン語LOAD表示
+		JSR		STRPRN
+		LDX		#LDMSG			;'LOADING '
+		JSR		STRPRN
+		LDX		#KBUF			;ファイル名
+		JSR		STRPRN
+		LDAA	#'('
+		JSR		PRINT
+		LDAA	ADRS			;読み込み開始アドレス表示
+		JSR		PRHEX
+		LDAA	ADRS+1
+		JSR		PRHEX
+
+		LDAA	#'-'
+		JSR		PRINT
+
+		LDAA	LENG+1
+		ADDA	ADRS+1
+		STAA	ADRSK+1
+		LDAA	LENG
+		ADCA	ADRS
+		STAA	ADRSK
+		LDX		ADRSK
+		DEX
+		STX		ADRSK			;(ADRSK) <- 読み込み開始アドレス+読み込みByte数-1
+		
+		LDAA	ADRSK			;読み込み終了アドレス表示
+		JSR		PRHEX
+		LDAA	ADRSK+1
+		JSR		PRHEX
+		LDAA	#')'
+		JSR		PRINT
+LV3		LDX		#CRLF			;CRLF
+		JSR		STRPRN
+		JMP		LOP1
+
 ERR
 		STX		XSAVE
 		CMPA	#$F0
@@ -257,8 +397,12 @@ ERR1	CMPA	#$F1
 		LDX		#MSG_F1
 		BRA		ERRR
 ERR3	CMPA	#$F3
-		BNE		ERR99
+		BNE		ERR4
 		LDX		#MSG_F3
+		BRA		ERRR
+ERR4	CMPA	#$F4
+		BNE		ERR99
+		LDX		#MSG_F4
 		BRA		ERRR
 ERR99
 		JSR		PRHEX
@@ -857,6 +1001,10 @@ MSG_F1
 		
 MSG_F3
 		FCC		/FILE EXIST/
+		FCB		$0D,$0A,$00
+	
+MSG_F4
+		FCC		/PROG FORMAT VERSION ERROR/
 		FCB		$0D,$0A,$00
 	
 MSG99
