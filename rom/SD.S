@@ -17,9 +17,10 @@ ADRS	EQU		$00E4			;SD読込用 開始アドレス
 LENG	EQU		$00E6			;SD読込用 読込バイト数
 XSAVE	EQU		$00E8			;Xレジスタ保存
 XSAVE2	EQU		$00EA			;Xレジスタ保存
-ADRSK	EQU		$00EC			;KSCN2 KTBL算出用
+ADRSK	EQU		$00EC			;KSCN2 KTBL算出用/SD読込用 終了アドレス計算用
 XSAVEK	EQU		$00EE			;KSCN2用 Xレジスタ保存
 FNSIZ	EQU		$00F0			;ファイルネーム文字数
+ADRS2	EQU		$00F2			;SD読込用 開始アドレス退避
 
 KEYDAT	EQU		$C800			;キーデータ取得
 KEYSEL	EQU		$C801			;Bit0-Bit3に0-8を出力して$C800のBit0-Bit4のデータを取得
@@ -156,8 +157,10 @@ LD1		JSR		RCVBYTE			;FNAME
 		
 		JSR		RCVBYTE			;読み込みアドレス 1stByte
 		STAA	ADRS+1
+		STAA	ADRS2+1
 		JSR		RCVBYTE			;読み込みアドレス 2ndByte
 		STAA	ADRS
+		STAA	ADRS2
 		JSR		RCVBYTE			;SKIP 3rdByte
 		JSR		RCVBYTE			;SKIP 4thByte
 		
@@ -188,14 +191,23 @@ LD3		LDX		#LDMSG			;'LOADING '
 		JSR		PRHEX
 		LDAA	ADRS+1
 		JSR		PRHEX
+
 		LDAA	#'-'
 		JSR		PRINT
-		LDAB	LENG+1			;読み込み終了アドレス表示
-		ADDB	ADRS+1
+
+		LDAA	LENG+1
+		ADDA	ADRS+1
+		STAA	ADRSK+1
 		LDAA	LENG
 		ADCA	ADRS
+		STAA	ADRSK
+		LDX		ADRSK
+		DEX
+		STX		ADRSK			;(ADRSK) <- 読み込み開始アドレス+読み込みByte数-1
+		
+		LDAA	ADRSK			;読み込み終了アドレス表示
 		JSR		PRHEX
-		TBA
+		LDAA	ADRSK+1
 		JSR		PRHEX
 		LDAA	#')'
 		JSR		PRINT
@@ -602,6 +614,9 @@ DL8		JSR		SNDBYTE
 		
 SDIR99	RTS
 ERRJ6	JMP		ERR
+
+MEXEC	LDX		ADRS2
+		JMP		X
 
 ;--------------- Aレジスタのアルファベット小文字を大文字に変換 ----------------
 AZLCNV	CMPA	#$61			;a～zなら$20を引いてA～Zに変換
@@ -1069,10 +1084,10 @@ CTBL
 ;		FDB		$F4EF
 		FDB		LOAD
 
-		FCC		/MLOA/
-		FCB		'D'+$80
+		FCC		/MEXE/
+		FCB		'C'+$80
 ;		FDB		$F4E3
-		FDB		LOAD
+		FDB		MEXEC
 
 		FCC		/SAV/
 		FCB		'E'+$80
