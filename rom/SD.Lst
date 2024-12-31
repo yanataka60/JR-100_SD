@@ -326,10 +326,10 @@
 0326	D21D	BD D7BA		      	JSR   	RCVBYTE        	;セクションSIZE 2ndByte
 0327	D220	BD D7BA		      	JSR   	RCVBYTE        	;セクションSIZE 3rdByte
 0328	D223	BD D7BA		      	JSR   	RCVBYTE        	;セクションSIZE 4thByte
-0329	D226	86 02		      	LDAA  	#$02           	;BASICなら読込開始アドレスは$0246固定
+0329	D226	86 46		      	LDAA  	#$46           	;BASICなら読込開始アドレスは$0246固定
 0330	D228	97 E5		      	STAA  	ADRS+1         	
 0331	D22A	97 F3		      	STAA  	ADRS2+1        	
-0332	D22C	86 46		      	LDAA  	#$46           	
+0332	D22C	86 02		      	LDAA  	#$02           	
 0333	D22E	97 E4		      	STAA  	ADRS           	
 0334	D230	97 F2		      	STAA  	ADRS2          	
 0335				

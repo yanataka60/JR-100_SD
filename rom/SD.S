@@ -326,10 +326,10 @@ LVBAS	CMPB	#'A'
 		JSR		RCVBYTE			;セクションSIZE 2ndByte
 		JSR		RCVBYTE			;セクションSIZE 3rdByte
 		JSR		RCVBYTE			;セクションSIZE 4thByte
-		LDAA	#$02			;BASICなら読込開始アドレスは$0246固定
+		LDAA	#$46			;BASICなら読込開始アドレスは$0246固定
 		STAA	ADRS+1
 		STAA	ADRS2+1
-		LDAA	#$46
+		LDAA	#$02
 		STAA	ADRS
 		STAA	ADRS2
 		
