@@ -615,6 +615,7 @@ DL8		JSR		SNDBYTE
 SDIR99	RTS
 ERRJ6	JMP		ERR
 
+;--------------- MEXECUTE 機械語読み込みアドレスを実行アドレスとしてジャンプ -------
 MEXEC	LDX		ADRS2
 		JMP		X
 
