@@ -56,7 +56,7 @@ START
 		JMP		MSAVE
 		JMP		FILES
 
-INIT
+INIT	STX		XSAVE			;コマンド文字列終了位置を保存
 		JSR		PIOINI			;8255初期化
 
 		LDAA	BTPNT
@@ -67,14 +67,15 @@ INIT
 		LDX		#CTBL
 		STX		CTPNT			:BASICステートメントポインタをCBTLに変更
 		LDX		#SDMSG			;'JR-100_SD READY OK!'
-		JSR		STRPRN
-		RTS
-INI2	LDX		#$F898
+		BRA		INI3
+INI2	STX		XSAVE			;コマンド文字列終了位置を保存
+		LDX		#$F898
 		STX		BTPNT			;BASICコマンドポインタを元に戻す
 		LDX		#$F8C9
 		STX		CTPNT			:BASICステートメントポインタを元に戻す
 		LDX		#CMTMSG			;'CMT OK!'
-		JSR		STRPRN
+INI3	JSR		STRPRN
+		LDX		XSAVE
 		RTS
 
 DUMMY
@@ -181,6 +182,23 @@ LD3		LDX		#LDMSG			;'LOADING '
 		JSR		STRPRN
 		LDX		#KBUF			;ファイル名
 		JSR		STRPRN
+		LDAA	#'('
+		JSR		PRINT
+		LDAA	ADRS			;読み込み開始アドレス表示
+		JSR		PRHEX
+		LDAA	ADRS+1
+		JSR		PRHEX
+		LDAA	#'-'
+		JSR		PRINT
+		LDAB	LENG+1			;読み込み終了アドレス表示
+		ADDB	ADRS+1
+		LDAA	LENG
+		ADCA	ADRS
+		JSR		PRHEX
+		TBA
+		JSR		PRHEX
+		LDAA	#')'
+		JSR		PRINT
 		LDX		#CRLF			;CRLF
 		JSR		STRPRN
 
