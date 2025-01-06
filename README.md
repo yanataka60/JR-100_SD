@@ -98,8 +98,7 @@ RAM($4000～$7FFF)を拡張する場合
 ## 接続
 　JR-100本体後ろの拡張端子に挿し込みます。
 
-![JR-100_SD Back](https://github.com/yanataka60/JR-100_SD/blob/main/JPEG/JR-100_SD(4).jpg)
-![Card Edge Connector](https://github.com/yanataka60/JR-100_SD/blob/main/JPEG/JR-100_SD(3).jpg)
+![JR-100_SD Back](https://github.com/yanataka60/JR-100_SD/blob/main/JPEG/JR-100_SD(5).jpg)
 
 ## 電源の供給
 　JR-100の拡張端子には+5Vが出ていないため、JR-100_SDには別途電源を供給する必要があります。
