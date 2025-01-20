@@ -37,7 +37,7 @@ Pin 21 = RESOUT;
 
 /** Logic **/
 IOADD  =A15 & A14 & !(A13) & !(A12) & A11 & A10 & !(A9) & !(A8) & !(A7) & !(A6) & !(A5);
-PIOSEL = !(IOADD & A4 & !(BKILL));
+PIOSEL = !(IOADD & A4);
 RAMSEL = !(!(A15) & A14 & !(CLOCK));
 ROMSEL = !(A15 & A14 & !(A13) & A12 & !(CLOCK)) # RDIN;
 JOYSEL = !(IOADD & !(A4) & !(CLOCK)) # RDIN;
