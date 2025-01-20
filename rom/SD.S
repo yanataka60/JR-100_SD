@@ -656,12 +656,15 @@ SDIR_PRG
 		TSTA
 		BNE		ERRJ5			;ERROR
 
-		STX		XSAVE			;コマンド文字列終了位置を保存
+SDR00	LDAA	X
+		CMPA	#' '			;空白は除去
+		BNE		SDR01
+		INX
+		BRA		SDR00
+SDR01	STX		XSAVE			;コマンド文字列終了位置を保存
 		LDAB	#$20			;(X)からのファイル名32Byteを送信
 SDR1	LDAA	X
 		INX
-		CMPA	#' '			;空白は除去
-		BEQ		SDR1
 		CMPA	#'"'			;ダブルコーテーションは除去
 		BEQ		SDR1
 		CMPA	#':'			;コロンなら$00にして送信
