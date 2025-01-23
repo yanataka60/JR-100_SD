@@ -243,8 +243,7 @@ LOP1	LDX		ADRS
 		STX		LENG			;(LENG) <- (LENG) -1
 		BNE		LOP1			;(LENG)が0になるまでループ
 
-		LDAA	FLG				;FLG CHECK 1(マシン語)なら終了
-		TSTA
+		TST		FLG				;FLG CHECK 1(マシン語)なら終了
 		BNE		LOP2
 		
 		LDX		ADRS			;0ならBASICパラメータをセット
@@ -340,8 +339,7 @@ LV5		JSR		RCVBYTE			;読み込みByte数1st受信
 		JSR		RCVBYTE			;SKIP 3rd
 		JSR		RCVBYTE			;SKIP 4th
 		
-		LDAA	FLG
-		TSTA
+		TST		FLG
 		BNE		LV2
 		LDX		#BSMSG			;BASICプログラムLOAD表示
 		JSR		STRPRN
@@ -725,8 +723,6 @@ DL91	JSR		RCVBYTE			;#KBUFへ文字列格納
 		INX
 		TSTA					;$00を受信するまで受信処理
 		BNE		DL91
-;		LDX		#KBUF
-;		JSR		STRPRN
 		JSR		RCVBYTE			;$FF終了コード読み飛ばし
 		JSR		RCVBYTE			;状態取得読み飛ばし
 		LDX		#KBUF
@@ -780,7 +776,7 @@ AZ1		RTS
 ;(X)から$00までの文字列を表示
 STRPRN
 		LDAA	X				;A <- (X)
-		CMPA	#$00			;$00なら終了
+		TSTA					;$00なら終了
 		BEQ		SP1
 		JSR		PRINT			;1文字出力
 		INX
