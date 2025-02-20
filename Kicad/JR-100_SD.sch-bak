@@ -268,7 +268,7 @@ Wire Wire Line
 Wire Wire Line
 	3400 3400 3600 3400
 Wire Wire Line
-	4900 3500 4600 3500
+	4800 3500 4600 3500
 Wire Wire Line
 	3400 3600 3600 3600
 Wire Wire Line
@@ -277,7 +277,7 @@ Wire Wire Line
 	3400 2800 3600 2800
 Wire Wire Line
 	3400 3000 3600 3000
-Text Label 4900 3500 2    50   ~ 0
+Text Label 4800 3500 2    50   ~ 0
 A14
 Text Label 3400 3600 0    50   ~ 0
 A12
@@ -296,18 +296,18 @@ Wire Wire Line
 Wire Wire Line
 	3400 3500 3600 3500
 Wire Wire Line
-	4900 3600 4600 3600
+	4800 3600 4600 3600
 Wire Wire Line
-	4900 3400 4600 3400
+	4800 3400 4600 3400
 Wire Wire Line
 	3400 2700 3600 2700
 Wire Wire Line
 	3400 2900 3600 2900
 Wire Wire Line
 	3400 3100 3600 3100
-Text Label 4900 3600 2    50   ~ 0
+Text Label 4800 3600 2    50   ~ 0
 A15
-Text Label 4900 3400 2    50   ~ 0
+Text Label 4800 3400 2    50   ~ 0
 A13
 Text Label 3400 3500 0    50   ~ 0
 A11
@@ -318,20 +318,20 @@ A7
 Text Label 3400 2900 0    50   ~ 0
 A5
 Wire Wire Line
-	4900 2700 4600 2700
-Text Label 4900 2700 2    50   ~ 0
+	4800 2700 4600 2700
+Text Label 4800 2700 2    50   ~ 0
 ~RD
-Text Label 4900 3000 2    50   ~ 0
+Text Label 4800 3000 2    50   ~ 0
 JOY
-Text Label 4900 3100 2    50   ~ 0
+Text Label 4800 3100 2    50   ~ 0
 ROM
-Text Label 4900 3200 2    50   ~ 0
+Text Label 4800 3200 2    50   ~ 0
 RAM
-Text Label 4900 3300 2    50   ~ 0
+Text Label 4800 3300 2    50   ~ 0
 PIO
 Wire Wire Line
-	4900 2800 4600 2800
-Text Label 4900 2800 2    50   ~ 0
+	4800 2800 4600 2800
+Text Label 4800 2800 2    50   ~ 0
 ~WE
 $Comp
 L 74xx:74LS366 U2
@@ -780,8 +780,8 @@ Wire Wire Line
 Wire Wire Line
 	7200 4800 7200 4900
 Wire Wire Line
-	4900 2900 4600 2900
-Text Label 4900 2900 2    50   ~ 0
+	4800 2900 4600 2900
+Text Label 4800 2900 2    50   ~ 0
 ~PIO
 Text Label 7900 5800 0    50   ~ 0
 DB7
@@ -942,7 +942,7 @@ Wire Wire Line
 	7200 4800 7200 4550
 Connection ~ 7200 4800
 Wire Wire Line
-	4600 3300 4900 3300
+	4600 3300 4800 3300
 Wire Wire Line
 	5900 3200 5900 4700
 Wire Wire Line
@@ -1391,7 +1391,7 @@ Connection ~ 10250 4250
 Wire Wire Line
 	9200 6250 9750 6250
 Text Label 9200 6250 0    50   ~ 0
-~CLOCK
+CLOCK
 Wire Wire Line
 	9200 6150 9750 6150
 Text Label 9200 6150 0    50   ~ 0
@@ -1411,6 +1411,7 @@ Wire Wire Line
 Connection ~ 9650 5850
 Wire Wire Line
 	9650 5850 9750 5850
+NoConn ~ 4600 2600
 $Comp
 L Arduino:Arduino_Pro_Mini U6
 U 1 1 61A254A8
@@ -1530,8 +1531,4 @@ Wire Wire Line
 	10750 5950 12400 5950
 Wire Wire Line
 	10750 6050 12500 6050
-Wire Wire Line
-	4900 2600 4600 2600
-Text Label 4900 2600 2    50   ~ 0
-~CLOCK
 $EndSCHEMATC

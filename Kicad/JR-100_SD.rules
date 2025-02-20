@@ -11,7 +11,7 @@
     (via_costs 50)
     (plane_via_costs 5)
     (start_ripup_costs 100)
-    (start_pass_no 11423)
+    (start_pass_no 3956)
     (layer_rule F.Cu
       (active on)
       (preferred_direction horizontal)
@@ -80,9 +80,9 @@
     /~RD /~RESET /SCK /MISO /MOSI /CS /~WE /DB0
     /DB2 /DB4 /DB6 /DB1 /DB3 /DB5 /DB7 "Net-(J3-Pad1)"
     "Net-(J3-Pad2)" "Net-(J3-Pad3)" "Net-(J3-Pad4)" "Net-(J3-Pad6)" "Net-(J3-Pad0)" /PIO /RAM /ROM
-    /JOY /RESET "Net-(U5-Pad1)" "Net-(U5-Pad21)" "Net-(U5-Pad2)" "Net-(U5-Pad22)" "Net-(U5-Pad3)" "Net-(U5-Pad23)"
-    "Net-(U5-Pad4)" "Net-(U5-Pad24)" "Net-(U5-Pad25)" "Net-(U5-Pad10)" "Net-(U5-Pad16)" "Net-(U5-Pad18)" "Net-(U5-Pad19)" "Net-(U5-Pad20)"
-    "Net-(J4-Pad1)" "Net-(J5-Pad1)" /CLOCK /BKILL "Net-(J8-Pad1)"
+    /JOY "Net-(U5-Pad2)" "Net-(U5-Pad3)" "Net-(U5-Pad4)" "Net-(U5-Pad10)" "Net-(J4-Pad1)" "Net-(J5-Pad1)" /CLOCK
+    /BKILL "Net-(J8-Pad1)" /~PIO "Net-(U5-Pad5)" "Net-(U5-Pad11)" "Net-(U5-Pad12)" "Net-(U5-Pad13)" "Net-(U5-Pad14)"
+    "Net-(U5-Pad15)" "Net-(U5-Pad6)" "Net-(U5-Pad7)" /~CLOCK "Net-(U5-Pad8)" "Net-(U5-Pad9)"
     (clearance_class "kicad_default")
     (via_rule kicad_default)
     (rule

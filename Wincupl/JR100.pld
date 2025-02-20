@@ -25,21 +25,22 @@ Pin  15 = A13;
 Pin  14 = A14;
 Pin  13 = A15;
 Pin  22 = RDIN;
-Pin  23 = RESIN;
 
 /* OUTPUTS... */
 Pin 16 = PIOSEL;
 Pin 17 = RAMSEL;
 Pin 18 = ROMSEL;
 Pin 19 = JOYSEL;
-Pin 20 = WEOUT;
-Pin 21 = RESOUT;
+Pin 20 = PIO2SEL;
+Pin 21 = WEOUT;
+Pin 23 = CLOCK2;
 
 /** Logic **/
 IOADD  =A15 & A14 & !(A13) & !(A12) & A11 & A10 & !(A9) & !(A8) & !(A7) & !(A6) & !(A5);
 PIOSEL = !(IOADD & A4);
+PIO2SEL = !(PIOSEL);
 RAMSEL = !(!(A15) & A14 & !(CLOCK));
 ROMSEL = !(A15 & A14 & !(A13) & A12 & !(CLOCK)) # RDIN;
 JOYSEL = !(IOADD & !(A4) & !(CLOCK)) # RDIN;
-WEOUT = !(RDIN & !(CLOCK));
-RESOUT = !(RESIN);
+WEOUT = !(RDIN);
+CLOCK2 = !(CLOCK);
